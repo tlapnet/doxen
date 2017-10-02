@@ -1,0 +1,2 @@
+Disallow: /tests
+Disallow: /tests_output
