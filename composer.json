@@ -7,14 +7,9 @@
 		}
 	],
 	"require": {
-		"nette/utils": "~2.2",
-		"nette/application": "~2.2",
 		"erusev/parsedown": "^1.6"
 	},
 	"autoload": {
-		"classmap": [
-			"src/Map.php"
-		],
 		"psr-4": {
 			"Tlapnet\\Doxen\\": "src/"
 		}
