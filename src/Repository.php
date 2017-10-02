@@ -1,6 +1,6 @@
 <?php
 
-namespace Tlapnet\Doxen\DocumentationMiner;
+namespace Tlapnet\Doxen;
 
 
 use Nette\Utils\Strings;
