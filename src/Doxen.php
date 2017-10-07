@@ -6,6 +6,7 @@ namespace Tlapnet\Doxen;
 use Nette\InvalidArgumentException;
 use Nette\Utils\Image;
 use Nette\Utils\Strings;
+use Tlapnet\Doxen\DocumentationMiner\IDocumentationMiner;
 
 class Doxen
 {
@@ -74,22 +75,9 @@ class Doxen
 	 * @param string $file path do documentation file
 	 * @return string file content
 	 */
-	public function loadFileContent($file, $imageLink)
+	public function loadFileContent($file)
 	{
-		$extension = pathinfo($file, PATHINFO_EXTENSION);
-		$content   = file_get_contents($file);
-
-		// prepare markdown file
-		if ($extension === 'md') {
-
-			// replace image links from relative paths to presenter path
-			$content = preg_replace('~(!\[(.*)\]\((.*)\))~', '![$2](' . $imageLink . '&imageLink=$3)', $content);
-
-			// setup place to show
-			$content = "@[toc](Obsah)\n" . $content;
-		}
-
-		return $content;
+		return file_get_contents($file);
 	}
 
 
@@ -144,6 +132,21 @@ class Doxen
 
 
 	/**
+	 * @param string $page
+	 * @return string
+	 */
+	public function normalizePagename($page)
+	{
+		// remove .md suffix (fixes in doc links)
+		if (Strings::endsWith($page, '.md')) {
+			$page = substr($page, 0, -3);
+		}
+
+		return $page;
+	}
+
+
+	/**
 	 * @return string
 	 */
 	public function getHomepageTitle()
@@ -158,6 +161,17 @@ class Doxen
 	public function getHomepageContent()
 	{
 		return $this->documentationMiner->getHomepageContent();
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getHomepagePath()
+	{
+		$homepage = $this->documentationMiner->getHomepage();
+
+		return $homepage ? $homepage['path'] : '';
 	}
 
 

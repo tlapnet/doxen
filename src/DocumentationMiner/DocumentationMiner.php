@@ -7,6 +7,7 @@ namespace Tlapnet\Doxen\DocumentationMiner;
 use Nette\Neon\Neon;
 use Nette\Utils\Finder;
 use Nette\Utils\Strings;
+use Tlapnet\Doxen\Exception\LogicalException;
 
 class DocumentationMiner implements IDocumentationMiner
 {
@@ -20,26 +21,44 @@ class DocumentationMiner implements IDocumentationMiner
 	/**
 	 * @var array
 	 */
-	private $supportedDocMask = ['*.md', '*.txt'];
+	private $supportedDocMask = ['*.md'];
 
 	/**
 	 * @var array parsed configuration neon file
 	 */
 	private $config;
 
+	/**
+	 * @var null | array
+	 */
+	private $homepage = null;
 
 	/**
+	 * @var null | array
+	 */
+	private $docTree = null;
+
+
+	/*** get  *************************************************************/
+
+
+	/**
+	 * Main class method, returns documentation tree based on config 'doc' setup
 	 * @return array
 	 */
 	public function getDocTree()
 	{
-		$docFiles = $this->loadDocFiles($this->config['doc']);
+		if (is_null($this->docTree)) {
+			$docFiles      = $this->loadDocFiles($this->config['doc']);
+			$this->docTree = $this->createDocTree($docFiles);
+		}
 
-		return $this->createDocTree($docFiles);
+		return $this->docTree;
 	}
 
 
 	/**
+	 * Load configuration from neon file
 	 * @param string $configFile path to neon configuration
 	 */
 	public function loadDocumentationConfigFromFile($configFile)
@@ -50,8 +69,78 @@ class DocumentationMiner implements IDocumentationMiner
 			$this->config = $config;
 		}
 		else {
-			throw new \LogicException("Documentation config file  '$configFile' does not exists");
+			throw new \LogicException("Documentation config file '$configFile' does not exists");
 		}
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getHomepageTitle()
+	{
+		if (isset($this->config['home']['title'])) {
+			return $this->config['home']['title'];
+		}
+
+		if ($homepage = $this->getHomepage()) {
+			return $homepage['title'];
+		}
+
+		if (isset($this->config['home']['content']) && is_file($this->config['home']['content'])) {
+			return pathinfo($this->config['home']['content'], PATHINFO_FILENAME);
+		}
+
+		return 'Homepage';
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getHomepageContent()
+	{
+		if (isset($this->config['home']['content'])) {
+			$content = $this->config['home']['content'];
+
+			if (Strings::endsWith($content, '.md') && is_file($content)) {
+				return file_get_contents($content);
+			}
+			else {
+				return $content;
+			}
+		}
+
+		if ($homepage = $this->getHomepage()) {
+			if (is_string($homepage['data']) && is_file($homepage['data'])) {
+				return file_get_contents($homepage['data']);
+			}
+		}
+
+		return "Can not find any homepage content, please set 'home.content' in your configuration file or set 'doc' key to path with some markdown files.";
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getHomepage()
+	{
+		$this->getDocTree(); // generate doctree if not exists to find homepagePath
+
+		return $this->homepage;
+	}
+
+
+	/*** set  *************************************************************/
+
+
+	/**
+	 * @param string $urlSeparator
+	 */
+	public function setUrlSeparator($urlSeparator)
+	{
+		$this->urlSeparator = $urlSeparator;
 	}
 
 
@@ -65,43 +154,16 @@ class DocumentationMiner implements IDocumentationMiner
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getHomepageTitle()
-	{
-		return $this->config['home']['title'];
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public function getHomepageContent()
-	{
-		$content = $this->config['home']['content'];
-
-		if (Strings::endsWith($content, '.md') && is_file($content)) {
-			return file_get_contents($content);
-		}
-		else {
-			return $content;
-		}
-	}
+	/*** private  *************************************************************/
 
 
 	/**
 	 * @param array $config
-	 * @throws \Exception
 	 */
 	private function validateConfig($config)
 	{
-		if (!isset($config['home']['title']) || !isset($config['home']['content'])) {
-			throw new \Exception("Configuration is not valid, missing setup for 'home.title' or 'home.content parameters'.");
-		}
-
 		if (!isset($config['doc'])) {
-			throw new \Exception("Configuration is not valid, missing setup for 'doc' parameter.");
+			throw new LogicalException("Configuration is not valid, missing setup for 'doc' parameter.");
 		}
 
 		return true;
@@ -118,7 +180,7 @@ class DocumentationMiner implements IDocumentationMiner
 		$result = [];
 		foreach ($docMenu as $k => $v) {
 			if (is_array($v)) {
-				$pathPart          = Strings::webalize($this->improvePathname(pathinfo($k, PATHINFO_FILENAME)), $this->urlSeparator);
+				$pathPart          = Strings::webalize($this->normalizePathname(pathinfo($k, PATHINFO_FILENAME)), $this->urlSeparator);
 				$result[$pathPart] = [
 					'data'  => $this->createDocTree($v, $path . $this->urlSeparator . $pathPart),
 					'path'  => ltrim($path . $this->urlSeparator . $pathPart, $this->urlSeparator),
@@ -126,12 +188,24 @@ class DocumentationMiner implements IDocumentationMiner
 				];
 			}
 			else {
-				$pathPart          = Strings::webalize($this->improvePathname(pathinfo($k, PATHINFO_FILENAME)), $this->urlSeparator);
-				$result[$pathPart] = [
+				$pathPart          = Strings::webalize($this->normalizePathname(pathinfo($k, PATHINFO_FILENAME)), $this->urlSeparator);
+				$item              = [
 					'data'  => $v,
 					'path'  => ltrim($path . $this->urlSeparator . $pathPart, $this->urlSeparator),
 					'title' => $k
 				];
+				$result[$pathPart] = $item;
+
+				// save current path as path to homepage file
+				if (isset($this->config['home']['content'])) {
+					if (realpath($v) === realpath($this->config['home']['content'])) {
+						$this->homepage = $item;
+					}
+				}
+				elseif (empty($path) && empty($this->homepage)) {
+					// if homepage is not set by configuration then first file from root of scanned directory is used
+					$this->homepage = $item;
+				}
 			}
 		}
 
@@ -169,26 +243,36 @@ class DocumentationMiner implements IDocumentationMiner
 	{
 		$result = [];
 		if (is_dir($docPath)) {
+			$resultFiles       = [];
+			$resultDirectories = [];
+			$hasSubdoc         = false;
 			foreach (Finder::findDirectories('*')->in($docPath) as $path => $file) {
 				$subdoc = $this->findFilesAndFolders($path); // check for some documentation files in subdirectory (this skips /images etc. directories)
 				if (!empty($subdoc)) {
-					$result[$this->improvePathname(basename($path))] = $this->findFilesAndFolders($path);
+					if (is_array($subdoc)) {
+						$resultDirectories[$this->normalizePathname(basename($path))] = $subdoc;
+					}
+					else {
+						$resultFiles[$this->normalizePathname(basename($path))] = $subdoc;
+					}
+					$hasSubdoc = true;
 				}
 			}
 
-			$directories = $result;
-			$files       = Finder::findFiles($this->supportedDocMask)->in($docPath);
+			$files = Finder::findFiles($this->supportedDocMask)->in($docPath);
 			foreach ($files as $path => $file) {
-				$result[$this->improvePathname(pathinfo($path, PATHINFO_FILENAME))] = $path;
+				$resultFiles[$this->normalizePathname(pathinfo($path, PATHINFO_FILENAME))] = $path;
 			}
 
+			$result = $resultFiles + $resultDirectories;
+
 			// in case only one file and no folder was found in directory, return file directly
-			if (empty($directories) && count($files) === 1) {
+			if (!$hasSubdoc && count($files) === 1) {
 				$result = array_shift($result);
 			}
 		}
 		elseif (is_file($docPath)) {
-			$result[$this->improvePathname(pathinfo($docPath, PATHINFO_FILENAME))] = $docPath;
+			$result[$this->normalizePathname(pathinfo($docPath, PATHINFO_FILENAME))] = $docPath;
 		}
 
 		return $result;
@@ -199,20 +283,10 @@ class DocumentationMiner implements IDocumentationMiner
 	 * @param string $filename
 	 * @return string
 	 */
-	private function improvePathname($filename)
+	private function normalizePathname($filename)
 	{
 		$filename = preg_replace('~^[0-9]+_~', '', $filename); // 01_Something => Something
 
 		return ucfirst(str_replace('_', ' ', $filename)); // some_text => Some text
 	}
-
-
-	/**
-	 * @param string $urlSeparator
-	 */
-	public function setUrlSeparator($urlSeparator)
-	{
-		$this->urlSeparator = $urlSeparator;
-	}
-
 }

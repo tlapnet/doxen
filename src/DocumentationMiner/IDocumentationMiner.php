@@ -23,4 +23,10 @@ interface IDocumentationMiner
 	 * @return string
 	 */
 	public function getHomepageContent();
+
+
+	/**
+	 * @return array
+	 */
+	public function getHomepage();
 }

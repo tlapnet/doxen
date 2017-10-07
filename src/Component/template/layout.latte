@@ -1,0 +1,17 @@
+<style type="text/css">{$style|noescape}</style>
+<div style="max-width: {if $showMenu}1600px{else}1200px{/if}" class="container pull-left">
+	<div class="row">
+		<div class="col-md-12">
+			{include $breadcrumbTemplate}
+		</div>
+	</div>
+	<div class="row">
+		<div n:if="$showMenu" class="col-md-3">
+			{include $menuTemplate}
+		</div>
+		<div n:class="$showMenu ? col-md-9, !$showMenu ? col-md-12">
+			{block doxenContent}{/block}
+		</div>
+	</div>
+</div>
+<div class="clearfix"></div>

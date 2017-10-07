@@ -1,0 +1,30 @@
+<style type="text/css" n:syntax="off">
+	.doxen-menu .well ul{margin-left:20px}.doxen-menu .well h5{margin-top:20px;border-bottom:1px dashed #bbb;padding-bottom:10px;margin-bottom:5px}.doxen-menu .well h5:first-of-type{margin-top:0}.doxen-menu .well>ul>li.is-root+h5{margin-top:20px}.doxen-menu .well>ul,.doxen-menu .well>ul>li>ul{margin-left:0}.doxen-menu .nav>li>a{padding:5px 15px}.doxen-menu .nav>li.submenu{padding-left:15px;margin-top:10px;font-weight:500}
+</style>
+
+<div class="doxen-menu">
+	<div class="well sidebar-nav">
+		{block menu}
+			<ul class="nav nav-pills nav-stacked">
+				{foreach $docTree as $v}
+					{php list($data,$path,$title) = array_values($v)}
+					{var $isRoot = strpos($path,$urlSeparator) === false}
+					{if is_array($data)}
+						{if $isRoot}
+							<h5>{$title}</h5>
+						{else}
+							<li class="submenu">{$title}</li>
+						{/if}
+						<li>
+							{include menu, docTree => $data}
+						</li>
+					{else}
+						<li n:class="$isRoot ? is-root, $page === $path ? active">
+							<a n:href="showPage! $path" title="{$title}">{$title}</a>
+						</li>
+					{/if}
+				{/foreach}
+			</ul>
+		{/block}
+	</div>
+</div>

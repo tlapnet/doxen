@@ -1,0 +1,12 @@
+{layout $layoutTemplate}
+{block doxenContent}
+<div class="markdown-body">
+	<h2>{$doc['title']}</h2>
+	<ul>
+		{foreach $doc['data'] as $item}
+			<li>
+				<a n:href="showPage!, page => $item['path']">{$item['title']}</a>
+			</li>
+		{/foreach}
+	</ul>
+</div>

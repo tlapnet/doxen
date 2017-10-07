@@ -1,14 +1,11 @@
-<ol class="breadcrumb">
+<ol n:if="$showBreadcrumb" class="breadcrumb">
 	{foreach $breadcrumb as $b}
 		<li n:class="$iterator->last ? active">
 			{if $iterator->last}
 				{$b['title']}
 			{else}
-				<a href="{link default, page=>$b['path']}">{$b['title']}</a>
+				<a href="{link showPage!, page=>$b['path']}">{$b['title']}</a>
 			{/if}
 		</li>
 	{/foreach}
 </ol>
-<div class="markdown-body">
-	{!$docContent}
-</div>

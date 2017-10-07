@@ -44,38 +44,46 @@ class CachedDocumentationMiner implements IDocumentationMiner
 	}
 
 
+	/**** cached interface ****************************************************/
+
+
 	/**
 	 * @return array
 	 */
 	public function getDocTree()
 	{
-		if (!$this->cacheStorage) {
-			throw new \LogicException('missing cache storage setup');
-		}
-
-		if (!$this->documentationMiner) {
-			throw new \LogicException('missing documentation miner setup');
-		}
-
-		$cache         = $this->getDocTreeCache();
-		$cachedDocTree = $cache->load($this->cacheKey);
-
-		if ($cachedDocTree === null) {
-			$cachedDocTree = $this->documentationMiner->getDocTree();
-
-			$cacheSetup = [
-				Cache::EXPIRE => $this->cacheExpire
-			];
-
-			if ($this->cacheFile) {
-				$cacheSetup[Cache::FILES] = $this->cacheFile;
-			}
-
-			$cache->save($this->cacheKey, $cachedDocTree, $cacheSetup);
-		}
-
-		return $cachedDocTree;
+		return $this->getFromCache('getDocTree');
 	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getHomepageTitle()
+	{
+		return $this->getFromCache('getHomepageTitle');
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getHomepageContent()
+	{
+		return $this->getFromCache('getHomepageContent');
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getHomepage()
+	{
+		return $this->getFromCache('getHomepage');
+	}
+
+
+	/**** cache setup ****************************************************/
 
 
 	/**
@@ -124,24 +132,6 @@ class CachedDocumentationMiner implements IDocumentationMiner
 
 
 	/**
-	 * @return string
-	 */
-	public function getHomepageTitle()
-	{
-		return $this->documentationMiner->getHomepageTitle();
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public function getHomepageContent()
-	{
-		return $this->documentationMiner->getHomepageContent();
-	}
-
-
-	/**
 	 * @return Cache
 	 */
 	private function getDocTreeCache()
@@ -149,5 +139,43 @@ class CachedDocumentationMiner implements IDocumentationMiner
 		return new Cache($this->cacheStorage, 'Application.DoxenDocTree');
 	}
 
+
+	/**** private ****************************************************/
+
+
+	/**
+	 * @param string $method
+	 * @return mixed
+	 */
+	private function getFromCache($method)
+	{
+		if (!$this->cacheStorage) {
+			throw new \LogicException('missing cache storage setup');
+		}
+
+		if (!$this->documentationMiner) {
+			throw new \LogicException('missing documentation miner setup');
+		}
+
+		$key   = $this->cacheKey . '.' . $method;
+		$cache = $this->getDocTreeCache();
+		$data  = $cache->load($key);
+
+		if ($data === null) {
+			$data = $this->documentationMiner->$method();
+
+			$cacheSetup = [
+				Cache::EXPIRE => $this->cacheExpire
+			];
+
+			if ($this->cacheFile) {
+				$cacheSetup[Cache::FILES] = $this->cacheFile;
+			}
+
+			$cache->save($key, $data, $cacheSetup);
+		}
+
+		return $data;
+	}
 
 }
