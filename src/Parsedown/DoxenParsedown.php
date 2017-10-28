@@ -1,6 +1,6 @@
 <?php
 
-namespace Tlapnet\Doxen;
+namespace Tlapnet\Doxen\Parsedown;
 
 
 class DoxenParsedown extends \Parsedown

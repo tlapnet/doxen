@@ -7,23 +7,22 @@ use Nette\Application\UI\Control;
 use Nette\Utils\Image;
 use Tlapnet\Doxen\DocumentationMiner\DocumentationMiner;
 use Tlapnet\Doxen\Doxen;
-use Tlapnet\Doxen\DoxenParsedown;
 
 class DoxenControl extends Control
 {
 
 
-	/** @var  string @persistent */
+	/** @var string @persistent */
 	public $page;
 
-	/** @var  array */
+	/** @var array */
 	private $config;
 
-	/** @var  null | \Parsedown */
-	private $parsedown;
-
-	/** @var  Doxen */
+	/** @var Doxen */
 	private $doxenService;
+
+	/** @var IDecorator[] */
+	private $decorators = [];
 
 	/** @var bool */
 	private $showBreadcrumb = true;
@@ -62,11 +61,24 @@ class DoxenControl extends Control
 
 
 	/**
+	 * @param IDecorator $decorator
+	 */
+	public function registerDecorator($decorator)
+	{
+		$this->decorators[] = $decorator;
+	}
+
+
+	/**
 	 * @param string $page
 	 */
 	public function handleShowPage($page)
 	{
-		// todo: implement some before render decorator support
+		foreach ($this->decorators as $decorator) {
+			if (!$decorator->showPageAllowed($page)) {
+				$this->page = '';
+			}
+		}
 	}
 
 
@@ -76,6 +88,12 @@ class DoxenControl extends Control
 	 */
 	public function handleShowImage($page, $imageLink)
 	{
+		foreach ($this->decorators as $decorator) {
+			if (!$decorator->showImageAllowed($page)) {
+				exit;
+			}
+		}
+
 		$doxenService = $this->getDoxenService();
 		$image        = $doxenService->getImage($page, $imageLink);
 		$image->send(Image::JPEG, 94);
@@ -102,9 +120,6 @@ class DoxenControl extends Control
 		$template->breadcrumbTemplate = $this->breadcrumbTemplate;
 		$template->style              = file_get_contents($this->cssStyleFile);
 
-		// prepare parsedown
-		$parsedown = $this->getParsedown();
-
 		// try setup page from homepage
 		if (empty($page)) {
 			if ($page = $doxenService->getHomepagePath()) {
@@ -112,13 +127,15 @@ class DoxenControl extends Control
 			}
 			else {
 				// page was not found as part of found documentation, use default homepage content instead
-				$template->doc = $parsedown->text($doxenService->getHomepageContent());
+				$template->doc = $doxenService->getHomepageContent();
+				foreach ($this->decorators as $decorator) {
+					$template->doc = $decorator->processContent($template->doc, $this);
+				}
 			}
 		}
 
 		// try to found page in documentation
 		if ($breadcrumb = $doxenService->getPageBreadcrumb($page)) {
-			$parsedown->setPage($page);
 			$template->page = $page;
 			$actual         = array_values(array_slice($breadcrumb, -1))[0]; // get last item from $breadcrumb
 
@@ -128,7 +145,10 @@ class DoxenControl extends Control
 				$template->setFile($this->listTemplate);
 			}
 			else {
-				$template->doc = $parsedown->text($doxenService->loadFileContent($actual['data']));
+				$template->doc = $doxenService->loadFileContent($actual['data']);
+				foreach ($this->decorators as $decorator) {
+					$template->doc = $decorator->processContent($template->doc, $this, $page);
+				}
 			}
 
 			if (empty($template->breadcrumb)) {
@@ -165,7 +185,7 @@ class DoxenControl extends Control
 
 
 	/**
-	 * Set path to root of documenation, use setConfig() id extra configuration needed
+	 * Set path to root of documenation, use setConfig() if extra configuration needed
 	 * @param string $path
 	 * @throws \Exception
 	 */
@@ -268,19 +288,6 @@ class DoxenControl extends Control
 		}
 
 		return $this->doxenService;
-	}
-
-
-	/**
-	 * @return \Parsedown
-	 */
-	private function getParsedown()
-	{
-		if (!$this->parsedown) {
-			$this->parsedown = new DoxenParsedown($this);
-		}
-
-		return $this->parsedown;
 	}
 
 
