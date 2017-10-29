@@ -1,0 +1,36 @@
+{layout $layoutTemplate}
+{block doxenContent}
+
+<h1>Vyhledávání</h1>
+
+{if empty($searchQuery)}
+	<div class="alert alert-danger">
+		Zadejte prosím dotaz do formuláře výše.
+	</div>
+{else}
+	{if count($searchResult)}
+		<div class="alert alert-info">
+			výsledek hledání výrazu <strong>"{$searchQuery}"</strong>
+		</div>
+	{else}
+		<div class="alert alert-warning">
+			na výraz <strong>"{$searchQuery}"</strong> nebyl nalezen žádný výsledek
+		</div>
+	{/if}
+	<ul class="nav nav-pills nav-stacked">
+		{foreach $searchResult as $path => $data}
+			<li n:if="$control->showPageAllowed($path)">
+				<a n:href="showPage!, $path">
+					{foreach $data['title'] as $title}
+						<strong>{$title}{if !$iterator->last} → {/if}</strong>
+					{/foreach}
+					<span class="badge pull-right" title="relevance / počet výskytů">
+						{$data['level']} / {$data['count']}
+					</span>
+				</a>
+			</li>
+		{/foreach}
+	</ul>
+{/if}
+
+

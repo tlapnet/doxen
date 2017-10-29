@@ -1,9 +1,9 @@
 <?php
 
-namespace Tlapnet\Doxen;
+namespace Tlapnet\Doxen\Searcher;
 
 
-class ContentSearch
+class MarkdownSearcher implements ISearcher
 {
 
 
@@ -88,10 +88,10 @@ class ContentSearch
 		foreach ($docTree as $doc) {
 			$t   = $titlePath;
 			$t[] = $doc['title'];
-			if (is_array($doc['data']) && $doc['visible']) {
+			if (is_array($doc['data'])) {
 				$this->setAvaiableFiles($doc['data'], $t);
 			}
-			elseif ($doc['visible']) {
+			else {
 				$this->fileList[$doc['path']]  = $doc['data'];
 				$this->titleList[$doc['path']] = $t;
 			}

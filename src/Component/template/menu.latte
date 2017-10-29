@@ -8,20 +8,22 @@
 			<ul class="nav nav-pills nav-stacked">
 				{foreach $docTree as $v}
 					{php list($data,$path,$title) = array_values($v)}
-					{var $isRoot = strpos($path,$urlSeparator) === false}
-					{if is_array($data)}
-						{if $isRoot}
-							<h5>{$title}</h5>
+					{if $control->showPageAllowed($path)}
+						{var $isRoot = strpos($path,$urlSeparator) === false}
+						{if is_array($data)}
+							{if $isRoot}
+								<h5>{$title}</h5>
+							{else}
+								<li class="submenu">{$title}</li>
+							{/if}
+							<li>
+								{include menu, docTree => $data}
+							</li>
 						{else}
-							<li class="submenu">{$title}</li>
+							<li n:class="$isRoot ? is-root, $page === $path ? active">
+								<a n:href="showPage! $path" title="{$title}">{$title}</a>
+							</li>
 						{/if}
-						<li>
-							{include menu, docTree => $data}
-						</li>
-					{else}
-						<li n:class="$isRoot ? is-root, $page === $path ? active">
-							<a n:href="showPage! $path" title="{$title}">{$title}</a>
-						</li>
 					{/if}
 				{/foreach}
 			</ul>

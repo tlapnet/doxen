@@ -7,6 +7,7 @@ use Nette\Application\UI\Control;
 use Nette\Utils\Image;
 use Tlapnet\Doxen\DocumentationMiner\DocumentationMiner;
 use Tlapnet\Doxen\Doxen;
+use Tlapnet\Doxen\Searcher\ISearcher;
 
 class DoxenControl extends Control
 {
@@ -23,6 +24,15 @@ class DoxenControl extends Control
 
 	/** @var IDecorator[] */
 	private $decorators = [];
+
+	/** @var  ISearcher */
+	private $searcher;
+
+	/** @var null | array */
+	private $searchResult = null;
+
+	/** @var null | string */
+	private $searchQuery = null;
 
 	/** @var bool */
 	private $showBreadcrumb = true;
@@ -44,6 +54,9 @@ class DoxenControl extends Control
 
 	/** @var string */
 	private $breadcrumbTemplate = __DIR__ . '/template/breadcrumb.latte';
+
+	/** @var string */
+	private $searchTemplate = __DIR__ . '/template/search.latte';
 
 	/** @var string */
 	private $cssStyleFile = __DIR__ . '/style/github.css';
@@ -74,11 +87,35 @@ class DoxenControl extends Control
 	 */
 	public function handleShowPage($page)
 	{
+		if (!$this->showPageAllowed($page)) {
+			$this->page = '';
+		}
+	}
+
+
+	public function handleSearch()
+	{
+		if ($this->searcher && isset($_POST['query'])) {
+			$query              = $_POST['query'];
+			$this->searchQuery  = $query;
+			$this->searchResult = $this->searcher->search($this->getDoxenService()->getDocTree(), $query);
+		}
+	}
+
+
+	/**
+	 * @param string $page
+	 * @return bool
+	 */
+	public function showPageAllowed($page)
+	{
 		foreach ($this->decorators as $decorator) {
 			if (!$decorator->showPageAllowed($page)) {
-				$this->page = '';
+				return false;
 			}
 		}
+
+		return true;
 	}
 
 
@@ -104,21 +141,39 @@ class DoxenControl extends Control
 
 	public function render()
 	{
+		$template                     = $this->createTemplate();
+		$template->layoutTemplate     = $this->layoutTemplate;
+		$template->menuTemplate       = $this->menuTemplate;
+		$template->breadcrumbTemplate = $this->breadcrumbTemplate;
+		$template->searchTemplate     = $this->searchTemplate;
+		$template->breadcrumb         = [['title' => $this->getDoxenService()->getHomepageTitle(), 'path' => '']];
+		$template->showBreadcrumb     = $this->showBreadcrumb;
+		$template->showMenu           = $this->showMenu;
+		$template->urlSeparator       = '/';
+		$template->docTree            = $this->getDoxenService()->getDocTree();
+		$template->style              = file_get_contents($this->cssStyleFile);
+		$template->hasSearcher        = !is_null($this->searcher);
+
+		if (is_null($this->searchResult)) {
+			$this->renderDoc($template);
+		}
+		else {
+			$this->renderSearch($template);
+		}
+
+	}
+
+
+	/**
+	 * @param \Nette\Application\UI\ITemplate $template
+	 */
+	private function renderDoc($template)
+	{
 		$doxenService = $this->getDoxenService();
 		$page         = $doxenService->normalizePagename($this->page);
 
 		// prepare template
-		$template = $this->createTemplate();
 		$template->setFile($this->docTemplate);
-		$template->showBreadcrumb     = $this->showBreadcrumb;
-		$template->showMenu           = $this->showMenu;
-		$template->urlSeparator       = '/';
-		$template->breadcrumb         = [['title' => $doxenService->getHomepageTitle(), 'path' => '']];
-		$template->docTree            = $doxenService->getDocTree();
-		$template->layoutTemplate     = $this->layoutTemplate;
-		$template->menuTemplate       = $this->menuTemplate;
-		$template->breadcrumbTemplate = $this->breadcrumbTemplate;
-		$template->style              = file_get_contents($this->cssStyleFile);
 
 		// try setup page from homepage
 		if (empty($page)) {
@@ -164,6 +219,21 @@ class DoxenControl extends Control
 			$page = $doxenService->getHomepagePath();
 			$this->redirect('default', ['page' => $page ?: '']);
 		}
+
+		$template->render();
+	}
+
+
+	/**
+	 * @param \Nette\Application\UI\ITemplate $template
+	 */
+	private function renderSearch($template)
+	{
+		$template->setFile($this->searchTemplate);
+		$template->page         = '';
+		$template->searchQuery  = $this->searchQuery;
+		$template->searchResult = $this->searchResult;
+		$template->breadcrumb   = [['title' => 'Vyhledávání', 'path' => '']];
 
 		$template->render();
 	}
@@ -297,6 +367,24 @@ class DoxenControl extends Control
 	public function setDoxenService($doxenService)
 	{
 		$this->doxenService = $doxenService;
+	}
+
+
+	/**
+	 * @param ISearcher $searcher
+	 */
+	public function setSearcher($searcher)
+	{
+		$this->searcher = $searcher;
+	}
+
+
+	/**
+	 * @param string $searchTemplate
+	 */
+	public function setSearchTemplate($searchTemplate)
+	{
+		$this->searchTemplate = $searchTemplate;
 	}
 
 

@@ -1,8 +1,19 @@
 <style type="text/css">{$style|noescape}</style>
 <div style="max-width: {if $showMenu}1600px{else}1200px{/if}" class="container pull-left">
 	<div class="row">
-		<div class="col-md-12">
+		<div n:class="$hasSearcher ? col-md-9, !$hasSearcher ? col-md-12">
 			{include $breadcrumbTemplate}
+		</div>
+		<div n:if="$hasSearcher" class="col-md-3">
+			<form enctype="multipart/form-data" method="post" action="{link search!}">
+				<div class="input-group">
+					{default $searchQuery = ''}
+					<input type="text" class="form-control" placeholder="hledat" size="40" name="query" value="{$searchQuery}">
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-default"><i class="icon icon-search"></i></button>
+					</span>
+				</div>
+			</form>
 		</div>
 	</div>
 	<div class="row">
