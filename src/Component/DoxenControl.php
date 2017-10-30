@@ -129,8 +129,16 @@ class DoxenControl extends Control
 	{
 		$query = $this->getPresenter()->getHttpRequest()->getPost('query');
 		if ($this->searcher && !is_null($query)) {
-			$this->searchQuery  = $query;
-			$this->searchResult = $this->searcher->search($this->getDoxenService()->getDocTree(), $query);
+			$this->searchQuery = $query;
+			$searchResult      = $this->searcher->search($this->getDoxenService()->getDocTree(), $query);
+
+			// filter by decorators
+			$this->searchResult = [];
+			foreach ($searchResult as $k => $v) {
+				if ($this->showPageAllowed($k)) {
+					$this->searchResult[$k] = $v;
+				}
+			}
 		}
 	}
 

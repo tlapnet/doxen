@@ -19,7 +19,7 @@
 	{/if}
 	<ul class="nav nav-pills nav-stacked">
 		{foreach $searchResult as $path => $data}
-			<li n:if="$control->showPageAllowed($path)">
+			<li>
 				<a n:href="showPage!, $path">
 					{foreach $data['title'] as $title}
 						<strong>{$title}{if !$iterator->last} → {/if}</strong>
