@@ -95,8 +95,8 @@ class DoxenControl extends Control
 
 	public function handleSearch()
 	{
-		if ($this->searcher && isset($_POST['query'])) {
-			$query              = $_POST['query'];
+		$query = $this->getPresenter()->getHttpRequest()->getPost('query');
+		if ($this->searcher && !is_null($query)) {
 			$this->searchQuery  = $query;
 			$this->searchResult = $this->searcher->search($this->getDoxenService()->getDocTree(), $query);
 		}
