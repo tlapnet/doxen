@@ -74,6 +74,22 @@ class DoxenControl extends Control
 
 
 	/**
+	 * Set path to root of documenation, use setConfig() if extra configuration needed
+	 * @param string $path
+	 * @throws \Exception
+	 */
+	public function setDocumentationPath($path)
+	{
+		$path = realpath($path);
+		if (!file_exists($path)) {
+			throw new \Exception("Path '$path' was not found.");
+		}
+
+		$this->config = ['doc' => [$path]];
+	}
+
+
+	/**
 	 * @param IDecorator $decorator
 	 */
 	public function registerDecorator($decorator)
@@ -93,16 +109,6 @@ class DoxenControl extends Control
 	}
 
 
-	public function handleSearch()
-	{
-		$query = $this->getPresenter()->getHttpRequest()->getPost('query');
-		if ($this->searcher && !is_null($query)) {
-			$this->searchQuery  = $query;
-			$this->searchResult = $this->searcher->search($this->getDoxenService()->getDocTree(), $query);
-		}
-	}
-
-
 	/**
 	 * @param string $page
 	 * @return bool
@@ -116,6 +122,35 @@ class DoxenControl extends Control
 		}
 
 		return true;
+	}
+
+
+	public function handleSearch()
+	{
+		$query = $this->getPresenter()->getHttpRequest()->getPost('query');
+		if ($this->searcher && !is_null($query)) {
+			$this->searchQuery  = $query;
+			$this->searchResult = $this->searcher->search($this->getDoxenService()->getDocTree(), $query);
+		}
+	}
+
+
+	/**
+	 * @return Doxen
+	 */
+	private function getDoxenService()
+	{
+		if (!$this->doxenService) {
+			$documentationMiner = new DocumentationMiner();
+			$documentationMiner->setDocumentationConfig($this->config);
+
+			$doxenService = new Doxen();
+			$doxenService->setDocumentationMiner($documentationMiner);
+
+			$this->doxenService = $doxenService;
+		}
+
+		return $this->doxenService;
 	}
 
 
@@ -255,22 +290,6 @@ class DoxenControl extends Control
 
 
 	/**
-	 * Set path to root of documenation, use setConfig() if extra configuration needed
-	 * @param string $path
-	 * @throws \Exception
-	 */
-	public function setDocumentationPath($path)
-	{
-		$path = realpath($path);
-		if (!file_exists($path)) {
-			throw new \Exception("Path '$path' was not found.");
-		}
-
-		$this->config = ['doc' => [$path]];
-	}
-
-
-	/**
 	 * @param bool $showBreadcrumb
 	 */
 	public function showBreadcrumb($showBreadcrumb)
@@ -339,25 +358,6 @@ class DoxenControl extends Control
 	public function setCssStyleFile($cssStyleFile)
 	{
 		$this->cssStyleFile = $cssStyleFile;
-	}
-
-
-	/**
-	 * @return Doxen
-	 */
-	private function getDoxenService()
-	{
-		if (!$this->doxenService) {
-			$documentationMiner = new DocumentationMiner();
-			$documentationMiner->setDocumentationConfig($this->config);
-
-			$doxenService = new Doxen();
-			$doxenService->setDocumentationMiner($documentationMiner);
-
-			$this->doxenService = $doxenService;
-		}
-
-		return $this->doxenService;
 	}
 
 
