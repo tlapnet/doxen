@@ -195,7 +195,6 @@ class DoxenControl extends Control
 		else {
 			$this->renderSearch($template);
 		}
-
 	}
 
 
