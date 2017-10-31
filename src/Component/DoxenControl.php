@@ -217,6 +217,15 @@ class DoxenControl extends Control
 		// prepare template
 		$template->setFile($this->docTemplate);
 
+		// set page as empty in case of no breadcrumb found
+		$breadcrumb = null;
+		if (!empty($page)) {
+			$breadcrumb = $doxenService->getPageBreadcrumb($page);
+			if (!$breadcrumb) {
+				$page = '';
+			}
+		}
+
 		// try setup page from homepage
 		if (empty($page)) {
 			if ($page = $doxenService->getHomepagePath()) {
@@ -232,7 +241,8 @@ class DoxenControl extends Control
 		}
 
 		// try to found page in documentation
-		if ($breadcrumb = $doxenService->getPageBreadcrumb($page)) {
+		$breadcrumb = $breadcrumb ?: $doxenService->getPageBreadcrumb($page);
+		if ($breadcrumb) {
 			$template->page = $page;
 			$actual         = array_values(array_slice($breadcrumb, -1))[0]; // get last item from $breadcrumb
 
@@ -257,9 +267,9 @@ class DoxenControl extends Control
 
 		}
 		else {
-			// selected page is not valid, reset page to default value and redirect
-			$page = $doxenService->getHomepagePath();
-			$this->redirect('default', ['page' => $page ?: '']);
+			$template->doc            = 'Documentation not found';
+			$template->showBreadcrumb = false;
+			$template->showMenu       = false;
 		}
 
 		$template->render();
