@@ -89,7 +89,8 @@ class Doxen
 	public function getImage($page, $imageLink)
 	{
 		try {
-			$docFilename = array_pop($this->getPageBreadcrumb($page))['data'];
+			$breadcrumb  = $this->getPageBreadcrumb($page);
+			$docFilename = array_pop($breadcrumb)['data'];
 			if ($docFilename && is_file($docFilename)) {
 
 				// check if image path is part of original doc file content
