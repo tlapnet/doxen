@@ -219,25 +219,24 @@ class DocumentationMiner implements IDocumentationMiner
 	 */
 	private function loadDocFiles($doc)
 	{
-		$result     = [];
-		$hasSubmenu = false;
+		$result = [];
 		foreach ($doc as $key => $value) {
 			if (is_string($key)) { // key is menu title
-				$hasSubmenu   = true;
 				$result[$key] = $this->loadDocFiles($value);
 			}
 			else {
-				$result = array_merge($result, $this->findFilesAndFolders($value));
+				$found  = $this->findFilesAndFolders($value);
+				$result = array_merge($result, is_array($found) ? $found : [$found]);
 			}
 		}
 
-		return !$hasSubmenu && count($result) === 1 ? array_shift($result) : $result;
+		return $result;
 	}
 
 
 	/**
 	 * @param string $docPath
-	 * @return array
+	 * @return string | array
 	 */
 	private function findFilesAndFolders($docPath)
 	{
@@ -249,11 +248,12 @@ class DocumentationMiner implements IDocumentationMiner
 			foreach (Finder::findDirectories('*')->in($docPath) as $path => $file) {
 				$subdoc = $this->findFilesAndFolders($path); // check for some documentation files in subdirectory (this skips /images etc. directories)
 				if (!empty($subdoc)) {
+					$key = $this->normalizePathname(basename($path));
 					if (is_array($subdoc)) {
-						$resultDirectories[$this->normalizePathname(basename($path))] = $subdoc;
+						$resultDirectories[$key] = $subdoc;
 					}
 					else {
-						$resultFiles[$this->normalizePathname(basename($path))] = $subdoc;
+						$resultFiles[$key] = $subdoc;
 					}
 					$hasSubdoc = true;
 				}
