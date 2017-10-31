@@ -3,7 +3,10 @@
 namespace Tlapnet\Doxen\Component;
 
 
+use Nette\Application\Responses\CallbackResponse;
 use Nette\Application\UI\Control;
+use Nette\Http\IRequest;
+use Nette\Http\IResponse;
 use Nette\Utils\Image;
 use Tlapnet\Doxen\DocumentationMiner\DocumentationMiner;
 use Tlapnet\Doxen\Doxen;
@@ -176,9 +179,13 @@ class DoxenControl extends Control
 
 		$doxenService = $this->getDoxenService();
 		$image        = $doxenService->getImage($page, $imageLink);
-		$image->send(Image::JPEG, 94);
 
-		exit; // todo: implement image response
+		$response = new CallbackResponse(function (IRequest $httpRequest, IResponse $httpResponse) use ($image){
+			$httpResponse->addHeader('Content-Type', 'image/jpeg');
+			echo $image->toString(Image::JPEG, 94);
+		});
+
+		$this->getPresenter()->sendResponse($response);
 	}
 
 
