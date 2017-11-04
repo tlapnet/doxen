@@ -1,36 +1,34 @@
 {layout $layoutTemplate}
 {block doxenContent}
-
-<h1>Vyhledávání</h1>
-
-{if empty($searchQuery)}
-	<div class="alert alert-danger">
-		Zadejte prosím dotaz do formuláře výše.
-	</div>
-{else}
-	{if count($searchResult)}
-		<div class="alert alert-info">
-			výsledek hledání výrazu <strong>"{$searchQuery}"</strong>
+<div style="font-size: .95em" class="markdown-body">
+	<h1>Vyhledávání</h1>
+	{if empty($searchQuery)}
+		<div class="alert alert-danger">
+			Zadejte prosím dotaz do formuláře výše.
 		</div>
 	{else}
-		<div class="alert alert-warning">
-			na výraz <strong>"{$searchQuery}"</strong> nebyl nalezen žádný výsledek
-		</div>
+		{if count($searchResult)}
+			<div class="alert alert-info">
+				výsledek hledání výrazu <strong>"{$searchQuery}"</strong>
+			</div>
+		{else}
+			<div class="alert alert-warning">
+				na výraz <strong>"{$searchQuery}"</strong> nebyl nalezen žádný výsledek
+			</div>
+		{/if}
+		<ul style="padding-left: 0" class="nav nav-pills nav-stacked">
+			{foreach $searchResult as $result}
+				<li>
+					<a n:href="showPage!, $result->getNode()->getPath()">
+						{foreach $result->getTitle() as $title}
+							<strong>{$title}{if !$iterator->last} → {/if}</strong>
+						{/foreach}
+						<span style="font-size: .8em" class="badge pull-right" title="počet výskytů">
+							{$result->getLevel()} / {$result->getCount()}
+						</span>
+					</a>
+				</li>
+			{/foreach}
+		</ul>
 	{/if}
-	<ul class="nav nav-pills nav-stacked">
-		{foreach $searchResult as $path => $data}
-			<li>
-				<a n:href="showPage!, $path">
-					{foreach $data['title'] as $title}
-						<strong>{$title}{if !$iterator->last} → {/if}</strong>
-					{/foreach}
-					<span class="badge pull-right" title="relevance / počet výskytů">
-						{$data['level']} / {$data['count']}
-					</span>
-				</a>
-			</li>
-		{/foreach}
-	</ul>
-{/if}
-
-
+</div>

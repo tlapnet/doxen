@@ -2,31 +2,13 @@
 
 namespace Tlapnet\Doxen\DocumentationMiner;
 
-
 interface IDocumentationMiner
 {
 
 
 	/**
-	 * @return array
+	 * @return DocTree
 	 */
-	public function getDocTree();
+	public function createTree();
 
-
-	/**
-	 * @return string
-	 */
-	public function getHomepageTitle();
-
-
-	/**
-	 * @return string
-	 */
-	public function getHomepageContent();
-
-
-	/**
-	 * @return array
-	 */
-	public function getHomepage();
 }

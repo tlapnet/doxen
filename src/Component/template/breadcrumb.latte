@@ -1,10 +1,10 @@
 <ol n:if="$showBreadcrumb" class="breadcrumb">
-	{foreach $breadcrumb as $b}
+	{foreach $breadcrumb as $node}
 		<li n:class="$iterator->last ? active">
 			{if $iterator->last}
-				{$b['title']}
+				{$node->getTitle()}
 			{else}
-				<a href="{link showPage!, page=>$b['path']}">{$b['title']}</a>
+				<a href="{link showPage!, page=>$node->getPath()}">{$node->getTitle()}</a>
 			{/if}
 		</li>
 	{/foreach}

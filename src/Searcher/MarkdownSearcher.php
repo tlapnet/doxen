@@ -3,6 +3,9 @@
 namespace Tlapnet\Doxen\Searcher;
 
 
+use Tlapnet\Doxen\DocumentationMiner\DocTree;
+use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
+
 class MarkdownSearcher implements ISearcher
 {
 
@@ -15,9 +18,9 @@ class MarkdownSearcher implements ISearcher
 
 
 	/**
-	 * @param array $docTree
+	 * @param DocTree $docTree
 	 * @param string $query
-	 * @return array
+	 * @return SearchResult[]
 	 */
 	public function search($docTree, $query)
 	{
@@ -25,14 +28,16 @@ class MarkdownSearcher implements ISearcher
 			return [];
 		}
 
-		$this->setAvaiableFiles($docTree);
+		$this->setAvaiableFiles($docTree->getRootNode()->getNodes());
 
 		$result = [];
-		foreach ($this->fileList as $path => $file) {
-			$f = fopen($file, 'r');
-			if ($f) {
-				while (!feof($f)) {
-					$line = trim(fgets($f));
+		foreach ($this->fileList as $path => $node) {
+			$content = $node->getContent();
+			if (!empty($content)) {
+				$separator = "\r\n";
+				$line      = strtok($content, $separator);
+				while ($line !== false) {
+					$line = trim($line);
 					if (stripos($line, $query) !== false) {
 
 						/* prioritize headlines
@@ -56,8 +61,8 @@ class MarkdownSearcher implements ISearcher
 							$result[$path]['count'] += substr_count(strtolower($line), strtolower($query));
 						}
 					}
+					$line = strtok($separator);
 				}
-				fclose($f);
 			}
 		}
 
@@ -68,11 +73,12 @@ class MarkdownSearcher implements ISearcher
 
 		$data = [];
 		foreach ($result as $path => $lines) {
-			$data[$path] = [
-				'title' => $this->titleList[$path],
-				'level' => $lines['level'],
-				'count' => $lines['count']
-			];
+			$searchResult = new SearchResult();
+			$searchResult->setCount($lines['count']);
+			$searchResult->setLevel($lines['level']);
+			$searchResult->setTitle($this->titleList[$path]);
+			$searchResult->setNode($this->fileList[$path]);
+			$data[] = $searchResult;
 		}
 
 		return $data;
@@ -85,15 +91,15 @@ class MarkdownSearcher implements ISearcher
 	 */
 	private function setAvaiableFiles($docTree, $titlePath = [])
 	{
-		foreach ($docTree as $doc) {
+		foreach ($docTree as $node) {
 			$t   = $titlePath;
-			$t[] = $doc['title'];
-			if (is_array($doc['data'])) {
-				$this->setAvaiableFiles($doc['data'], $t);
+			$t[] = $node->getTitle();
+			if ($node->getType() === AbstractNode::TYPE_NODE) {
+				$this->setAvaiableFiles($node->getNodes(), $t);
 			}
 			else {
-				$this->fileList[$doc['path']]  = $doc['data'];
-				$this->titleList[$doc['path']] = $t;
+				$this->fileList[$node->getPath()]  = $node;
+				$this->titleList[$node->getPath()] = $t;
 			}
 		}
 	}

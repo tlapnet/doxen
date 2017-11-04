@@ -2,15 +2,17 @@
 
 namespace Tlapnet\Doxen\Searcher;
 
+use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
+use Tlapnet\Doxen\DocumentationMiner\DocTree;
 
 interface ISearcher
 {
 
 
 	/**
-	 * @param array $doctree
+	 * @param DocTree $docTree
 	 * @param string $query
-	 * @return array page => [title, level, count]
+	 * @return AbstractNode[]
 	 */
 	public function search($doctree, $query);
 

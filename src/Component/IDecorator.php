@@ -3,31 +3,40 @@
 namespace Tlapnet\Doxen\Component;
 
 
+use Tlapnet\Doxen\DocumentationMiner\DocTree;
+use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
+
 interface IDecorator
 {
 
 
 	/**
-	 * @param string $page
-	 * @return bool
+	 * @param DocTree $docTree
+	 * @param DoxenControl $control
 	 */
-	public function showPageAllowed($page);
+	public function decorateDocTree($docTree, $control);
 
 
 	/**
-	 * @param string $page
-	 * @return bool
+	 * @param AbstractNode $node
+	 * @param DoxenControl $control
 	 */
-	public function showImageAllowed($page);
+	public function decorateNode($node, $control);
 
 
 	/**
 	 * @param string $content
 	 * @param DoxenControl $control
-	 * @param string $page
 	 * @return string
 	 */
-	public function processContent($content, $control, $page = null);
+	public function decorateContent($content, $control);
+
+
+	/**
+	 * @param string $type
+	 * @param Control $control
+	 */
+	public function signalReceived($type, $control);
 
 
 }

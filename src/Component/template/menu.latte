@@ -6,24 +6,21 @@
 	<div class="well sidebar-nav">
 		{block menu}
 			<ul class="nav nav-pills nav-stacked">
-				{foreach $docTree as $v}
-					{php list($data,$path,$title) = array_values($v)}
-					{if $control->showPageAllowed($path)}
-						{var $isRoot = strpos($path,$urlSeparator) === false}
-						{if is_array($data)}
-							{if $isRoot}
-								<h5>{$title}</h5>
-							{else}
-								<li class="submenu">{$title}</li>
-							{/if}
-							<li>
-								{include menu, docTree => $data}
-							</li>
+				{foreach $docTree as $node}
+					{var $isRoot = $node->getLevel() === 1}
+					{if $node->getType() === \Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode::TYPE_NODE}
+						{if $isRoot}
+							<h5>{$node->getTitle()}</h5>
 						{else}
-							<li n:class="$isRoot ? is-root, $page === $path ? active">
-								<a n:href="showPage! $path" title="{$title}">{$title}</a>
-							</li>
+							<li class="submenu">{$node->getTitle()}</li>
 						{/if}
+						<li>
+							{include menu, docTree => $node->getNodes()}
+						</li>
+					{else}
+						<li n:class="$isRoot ? is-root, $page === $node->getPath() ? active">
+							<a n:href="showPage! $node->getPath()" title="{$node->getTitle()}">{$node->getTitle()}</a>
+						</li>
 					{/if}
 				{/foreach}
 			</ul>

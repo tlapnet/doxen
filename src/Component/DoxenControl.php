@@ -3,14 +3,14 @@
 namespace Tlapnet\Doxen\Component;
 
 
-use Nette\Application\Responses\CallbackResponse;
 use Nette\Application\UI\Control;
-use Nette\Http\IRequest;
-use Nette\Http\IResponse;
-use Nette\Utils\Image;
+use Nette\Application\UI\ITemplate;
+use Tlapnet\Doxen\DocumentationMiner\DocTree;
 use Tlapnet\Doxen\DocumentationMiner\DocumentationMiner;
-use Tlapnet\Doxen\Doxen;
+use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
+use Tlapnet\Doxen\DocumentationMiner\Node\TextNode;
 use Tlapnet\Doxen\Searcher\ISearcher;
+use Tlapnet\Doxen\Searcher\SearchResult;
 
 class DoxenControl extends Control
 {
@@ -19,11 +19,8 @@ class DoxenControl extends Control
 	/** @var string @persistent */
 	public $page;
 
-	/** @var array */
-	private $config;
-
-	/** @var Doxen */
-	private $doxenService;
+	/** @var  DocTree */
+	private $docTree;
 
 	/** @var IDecorator[] */
 	private $decorators = [];
@@ -31,64 +28,23 @@ class DoxenControl extends Control
 	/** @var  ISearcher */
 	private $searcher;
 
-	/** @var null | array */
+	/** @var null | SearchResult[] */
 	private $searchResult = null;
 
 	/** @var null | string */
 	private $searchQuery = null;
 
-	/** @var bool */
-	private $showBreadcrumb = true;
-
-	/** @var bool */
-	private $showMenu = true;
-
-	/** @var string */
-	private $layoutTemplate = __DIR__ . '/template/layout.latte';
-
-	/** @var string */
-	private $docTemplate = __DIR__ . '/template/doc.latte';
-
-	/** @var string */
-	private $listTemplate = __DIR__ . '/template/list.latte';
-
-	/** @var string */
-	private $menuTemplate = __DIR__ . '/template/menu.latte';
-
-	/** @var string */
-	private $breadcrumbTemplate = __DIR__ . '/template/breadcrumb.latte';
-
-	/** @var string */
-	private $searchTemplate = __DIR__ . '/template/search.latte';
-
-	/** @var string */
-	private $cssStyleFile = __DIR__ . '/style/github.css';
+	/** @var  Config */
+	private $controlConfig;
 
 
 	/**
-	 * @param null | string $documentationPath
+	 * @param DocTree $docTree
 	 */
-	public function __construct($documentationPath = null)
+	public function __construct(DocTree $docTree, Config $config = null)
 	{
-		if (!is_null($documentationPath)) {
-			$this->setDocumentationPath($documentationPath);
-		}
-	}
-
-
-	/**
-	 * Set path to root of documenation, use setConfig() if extra configuration needed
-	 * @param string $path
-	 * @throws \Exception
-	 */
-	public function setDocumentationPath($path)
-	{
-		$path = realpath($path);
-		if (!file_exists($path)) {
-			throw new \Exception("Path '$path' was not found.");
-		}
-
-		$this->config = ['doc' => [$path]];
+		$this->docTree       = $docTree;
+		$this->controlConfig = $config ?: new Config();
 	}
 
 
@@ -102,107 +58,39 @@ class DoxenControl extends Control
 
 
 	/**
-	 * @param string $page
+	 * @param string $type
 	 */
-	public function handleShowPage($page)
+	public function handleEvent($type)
 	{
-		if (!$this->showPageAllowed($page)) {
-			$this->page = '';
+		foreach ($this->decorators as $decorator) {
+			$decorator->signalReceived($type, $this);
 		}
 	}
 
 
 	/**
 	 * @param string $page
-	 * @return bool
 	 */
-	public function showPageAllowed($page)
-	{
-		foreach ($this->decorators as $decorator) {
-			if (!$decorator->showPageAllowed($page)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
+	public function handleShowPage($page){ }
 
 
 	public function handleSearch()
 	{
 		$query = $this->getPresenter()->getHttpRequest()->getPost('query');
 		if ($this->searcher && !is_null($query)) {
-			$this->searchQuery = $query;
-			$searchResult      = $this->searcher->search($this->getDoxenService()->getDocTree(), $query);
-
-			// filter by decorators
-			$this->searchResult = [];
-			foreach ($searchResult as $k => $v) {
-				if ($this->showPageAllowed($k)) {
-					$this->searchResult[$k] = $v;
-				}
-			}
+			$this->searchQuery  = $query;
+			$this->searchResult = $this->searcher->search($this->docTree, $query);
 		}
-	}
-
-
-	/**
-	 * @return Doxen
-	 */
-	private function getDoxenService()
-	{
-		if (!$this->doxenService) {
-			$documentationMiner = new DocumentationMiner();
-			$documentationMiner->setDocumentationConfig($this->config);
-
-			$doxenService = new Doxen();
-			$doxenService->setDocumentationMiner($documentationMiner);
-
-			$this->doxenService = $doxenService;
-		}
-
-		return $this->doxenService;
-	}
-
-
-	/**
-	 * @param string $page
-	 * @param string $imageLink
-	 */
-	public function handleShowImage($page, $imageLink)
-	{
-		foreach ($this->decorators as $decorator) {
-			if (!$decorator->showImageAllowed($page)) {
-				exit;
-			}
-		}
-
-		$doxenService = $this->getDoxenService();
-		$image        = $doxenService->getImage($page, $imageLink);
-
-		$response = new CallbackResponse(function (IRequest $httpRequest, IResponse $httpResponse) use ($image){
-			$httpResponse->addHeader('Content-Type', 'image/jpeg');
-			echo $image->toString(Image::JPEG, 94);
-		});
-
-		$this->getPresenter()->sendResponse($response);
 	}
 
 
 	public function render()
 	{
-		$template                     = $this->createTemplate();
-		$template->layoutTemplate     = $this->layoutTemplate;
-		$template->menuTemplate       = $this->menuTemplate;
-		$template->breadcrumbTemplate = $this->breadcrumbTemplate;
-		$template->searchTemplate     = $this->searchTemplate;
-		$template->breadcrumb         = [['title' => $this->getDoxenService()->getHomepageTitle(), 'path' => '']];
-		$template->showBreadcrumb     = $this->showBreadcrumb;
-		$template->showMenu           = $this->showMenu;
-		$template->urlSeparator       = '/';
-		$template->docTree            = $this->getDoxenService()->getDocTree();
-		$template->style              = file_get_contents($this->cssStyleFile);
-		$template->hasSearcher        = !is_null($this->searcher);
+		$this->decorateDocTree($this->docTree);
+		$template              = $this->createTemplate();
+		$template->hasSearcher = !is_null($this->searcher);
+		$template->docTree     = $this->docTree->getRootNode()->getNodes();
+		$this->controlConfig->setupTemplate($template);
 
 		if (is_null($this->searchResult)) {
 			$this->renderDoc($template);
@@ -214,183 +102,121 @@ class DoxenControl extends Control
 
 
 	/**
-	 * @param \Nette\Application\UI\ITemplate $template
+	 * @param ITemplate $template
 	 */
 	private function renderDoc($template)
 	{
-		$doxenService = $this->getDoxenService();
-		$page         = $doxenService->normalizePagename($this->page);
+		$page = $this->page;
 
 		// prepare template
-		$template->setFile($this->docTemplate);
-
-		// set page as empty in case of no breadcrumb found
-		$breadcrumb = null;
-		if (!empty($page)) {
-			$breadcrumb = $doxenService->getPageBreadcrumb($page);
-			if (!$breadcrumb) {
-				$page = '';
-			}
-		}
+		$template->setFile($this->controlConfig->getDocTemplate());
 
 		// try setup page from homepage
 		if (empty($page)) {
-			if ($page = $doxenService->getHomepagePath()) {
-				$template->breadcrumb = [];
-			}
-			else {
-				// page was not found as part of found documentation, use default homepage content instead
-				$template->doc = $doxenService->getHomepageContent();
-				foreach ($this->decorators as $decorator) {
-					$template->doc = $decorator->processContent($template->doc, $this);
-				}
-			}
+			$this->renderHomepage($template);
 		}
-
-		// try to found page in documentation
-		$breadcrumb = $breadcrumb ?: $doxenService->getPageBreadcrumb($page);
-		if ($breadcrumb) {
-			$template->page = $page;
-			$actual         = array_values(array_slice($breadcrumb, -1))[0]; // get last item from $breadcrumb
-
-			// check if selected page contains documentation content or list of another documentations
-			if (is_array($actual['data'])) {
-				$template->doc = $actual;
-				$template->setFile($this->listTemplate);
-			}
-			else {
-				$template->doc = $doxenService->loadFileContent($actual['data']);
-				foreach ($this->decorators as $decorator) {
-					$template->doc = $decorator->processContent($template->doc, $this, $page);
-				}
-			}
-
-			if (empty($template->breadcrumb)) {
-				$template->breadcrumb = [['title' => $doxenService->getHomepageTitle(), 'path' => '']];
-			}
-			else {
-				$template->breadcrumb = array_merge($template->breadcrumb, $breadcrumb);
-			}
-
+		elseif ($this->docTree->getHomepage()->getPath() === $page) {
+			$this->renderHomepage($template);
 		}
 		else {
-			$template->doc            = 'Documentation not found';
-			$template->showBreadcrumb = false;
-			$template->showMenu       = false;
+			// try to found page in documentation
+			$breadcrumb = $this->docTree->getBreadcrumb($page);
+			if ($breadcrumb) {
+				$tmp  = array_values($breadcrumb);
+				$node = end($tmp); // get last item from $breadcrumb
+				$this->decorateNode($node);
+
+				// check if selected page contains documentation content or list of another documentations
+				if ($node->getType() === AbstractNode::TYPE_NODE) {
+					$template->doc = $node;
+					$template->setFile($this->controlConfig->getListTemplate());
+				}
+				else {
+					$template->doc = $this->decorateContent($node->getContent());
+				}
+
+				$template->page       = $page;
+				$template->breadcrumb = $breadcrumb;
+				$template->render();
+			}
+			else {
+				$this->renderHomepage($template);
+			}
 		}
+	}
+
+
+	/**
+	 * @param ITemplate $template
+	 */
+	private function renderHomepage($template)
+	{
+		$homepageNode = $this->docTree->getHomepage();
+		$this->decorateNode($homepageNode);
+
+//		another way how to deal with homepage breadcrumb
+//		$template->breadcrumb =  $homepageNode->getPath() ? $this->docTree->getBreadcrumb($homepageNode->getPath()) : [$homepageNode];
+
+		$template->breadcrumb = [$homepageNode];
+		$template->page       = $homepageNode->getPath();
+		$template->doc        = $this->decorateContent($homepageNode->getContent());
 
 		$template->render();
 	}
 
 
 	/**
-	 * @param \Nette\Application\UI\ITemplate $template
+	 * @param AbstractNode $node
+	 */
+	private function decorateNode($node)
+	{
+		foreach ($this->decorators as $decorator) {
+			$decorator->decorateNode($node, $this);
+		}
+	}
+
+
+	/**
+	 * @param string $content
+	 * @return string
+	 */
+	private function decorateContent($content)
+	{
+		foreach ($this->decorators as $decorator) {
+			$content = $decorator->decorateContent($content, $this);
+		}
+
+		return $content;
+	}
+
+
+	/**
+	 * @param DocTree $docTree
+	 */
+	private function decorateDocTree($docTree)
+	{
+		foreach ($this->decorators as $decorator) {
+			$decorator->decorateDocTree($docTree, $this);
+		}
+	}
+
+
+	/**
+	 * @param ITemplate $template
 	 */
 	private function renderSearch($template)
 	{
-		$template->setFile($this->searchTemplate);
+		$template->setFile($this->controlConfig->getSearchTemplate());
 		$template->page         = '';
 		$template->searchQuery  = $this->searchQuery;
 		$template->searchResult = $this->searchResult;
-		$template->breadcrumb   = [['title' => 'Vyhledávání', 'path' => '']];
+
+		// setup breadcrumb
+		$node = new TextNode('');
+		$node->setTitle('Vyhledávání');
+		$template->breadcrumb = [$node];
 
 		$template->render();
-	}
-
-
-	/**
-	 * Documentation miner configuration with 'home.title', 'home.content' and 'doc' keys
-	 * @param string | array $config
-	 * @throws \Exception
-	 */
-	public function setConfig($config)
-	{
-		if (!is_array($config)) {
-			throw new \Exception("Given configuration is not in valid array format.");
-		}
-
-		$this->config = $config;
-	}
-
-
-	/**
-	 * @param bool $showBreadcrumb
-	 */
-	public function showBreadcrumb($showBreadcrumb)
-	{
-		$this->showBreadcrumb = $showBreadcrumb;
-	}
-
-
-	/**
-	 * @param bool $showMenu
-	 */
-	public function showMenu($showMenu)
-	{
-		$this->showMenu = $showMenu;
-	}
-
-
-	/**
-	 * @param string $layoutTemplate
-	 */
-	public function setLayoutTemplate($layoutTemplate)
-	{
-		$this->layoutTemplate = $layoutTemplate;
-	}
-
-
-	/**
-	 * @param string $docTemplate
-	 */
-	public function setDocTemplate($docTemplate)
-	{
-		$this->docTemplate = $docTemplate;
-	}
-
-
-	/**
-	 * @param string $listTemplate
-	 */
-	public function setListTemplate($listTemplate)
-	{
-		$this->listTemplate = $listTemplate;
-	}
-
-
-	/**
-	 * @param string $menuTemplate
-	 */
-	public function setMenuTemplate($menuTemplate)
-	{
-		$this->menuTemplate = $menuTemplate;
-	}
-
-
-	/**
-	 * @param string $breadcrumbTemplate
-	 */
-	public function setBreadcrumbTemplate($breadcrumbTemplate)
-	{
-		$this->breadcrumbTemplate = $breadcrumbTemplate;
-	}
-
-
-	/**
-	 * @param string $cssStyleFile
-	 */
-	public function setCssStyleFile($cssStyleFile)
-	{
-		$this->cssStyleFile = $cssStyleFile;
-	}
-
-
-	/**
-	 * @param Doxen $doxenService
-	 */
-	public function setDoxenService($doxenService)
-	{
-		$this->doxenService = $doxenService;
 	}
 
 
@@ -404,11 +230,20 @@ class DoxenControl extends Control
 
 
 	/**
-	 * @param string $searchTemplate
+	 * @param Config $controlConfig
 	 */
-	public function setSearchTemplate($searchTemplate)
+	public function setControlConfig($controlConfig)
 	{
-		$this->searchTemplate = $searchTemplate;
+		$this->controlConfig = $controlConfig;
+	}
+
+
+	/**
+	 * @return DocTree
+	 */
+	public function getDocTree()
+	{
+		return $this->docTree;
 	}
 
 

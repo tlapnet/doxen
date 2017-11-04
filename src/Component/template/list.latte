@@ -1,11 +1,11 @@
 {layout $layoutTemplate}
 {block doxenContent}
 <div class="markdown-body">
-	<h2>{$doc['title']}</h2>
+	<h2>{$doc->getTitle()}</h2>
 	<ul>
-		{foreach $doc['data'] as $item}
+		{foreach $doc->getNodes() as $node}
 			<li>
-				<a n:href="showPage!, page => $item['path']">{$item['title']}</a>
+				<a n:href="showPage!, page => $node->getPath()">{$node->getTitle()}</a>
 			</li>
 		{/foreach}
 	</ul>
