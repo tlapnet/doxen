@@ -5,6 +5,10 @@ namespace Tlapnet\Doxen\Component;
 
 use Nette\Application\UI\Control;
 use Nette\Application\UI\ITemplate;
+use Tlapnet\Doxen\Component\Event\AbstractEvent;
+use Tlapnet\Doxen\Component\Event\ContentEvent;
+use Tlapnet\Doxen\Component\Event\DocTreeEvent;
+use Tlapnet\Doxen\Component\Event\NodeEvent;
 use Tlapnet\Doxen\DocumentationMiner\DocTree;
 use Tlapnet\Doxen\DocumentationMiner\DocumentationMiner;
 use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
@@ -86,7 +90,7 @@ class DoxenControl extends Control
 
 	public function render()
 	{
-		$this->decorateDocTree($this->docTree);
+		$this->decorate(new DocTreeEvent($this->docTree));
 		$template              = $this->createTemplate();
 		$template->hasSearcher = !is_null($this->searcher);
 		$template->docTree     = $this->docTree->getRootNode()->getNodes();
@@ -124,7 +128,7 @@ class DoxenControl extends Control
 			if ($breadcrumb) {
 				$tmp  = array_values($breadcrumb);
 				$node = end($tmp); // get last item from $breadcrumb
-				$this->decorateNode($node);
+				$this->decorate(new NodeEvent($node));
 
 				// check if selected page contains documentation content or list of another documentations
 				if ($node->getType() === AbstractNode::TYPE_NODE) {
@@ -132,7 +136,7 @@ class DoxenControl extends Control
 					$template->setFile($this->controlConfig->getListTemplate());
 				}
 				else {
-					$template->doc = $this->decorateContent($node->getContent());
+					$template->doc = $this->decorate(new ContentEvent($node))->getContent();
 				}
 
 				$template->page       = $page;
@@ -147,57 +151,37 @@ class DoxenControl extends Control
 
 
 	/**
+	 * @param AbstractEvent $event
+	 */
+	public function decorate($event)
+	{
+		$event->setControl($this);
+		foreach ($this->decorators as $decorator) {
+			$decorator->decorate($event);
+		}
+
+		return $event;
+	}
+
+
+	/**
 	 * @param ITemplate $template
 	 */
 	private function renderHomepage($template)
 	{
 		$homepageNode = $this->docTree->getHomepage();
-		$this->decorateNode($homepageNode);
+		$this->decorate(new NodeEvent($homepageNode));
 
 //		another way how to deal with homepage breadcrumb
 //		$template->breadcrumb =  $homepageNode->getPath() ? $this->docTree->getBreadcrumb($homepageNode->getPath()) : [$homepageNode];
 
 		$template->breadcrumb = [$homepageNode];
 		$template->page       = $homepageNode->getPath();
-		$template->doc        = $this->decorateContent($homepageNode->getContent());
+
+		$event         = new ContentEvent($homepageNode);
+		$template->doc = $this->decorate($event)->getContent();
 
 		$template->render();
-	}
-
-
-	/**
-	 * @param AbstractNode $node
-	 */
-	private function decorateNode($node)
-	{
-		foreach ($this->decorators as $decorator) {
-			$decorator->decorateNode($node, $this);
-		}
-	}
-
-
-	/**
-	 * @param string $content
-	 * @return string
-	 */
-	private function decorateContent($content)
-	{
-		foreach ($this->decorators as $decorator) {
-			$content = $decorator->decorateContent($content, $this);
-		}
-
-		return $content;
-	}
-
-
-	/**
-	 * @param DocTree $docTree
-	 */
-	private function decorateDocTree($docTree)
-	{
-		foreach ($this->decorators as $decorator) {
-			$decorator->decorateDocTree($docTree, $this);
-		}
 	}
 
 

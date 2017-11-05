@@ -9,8 +9,8 @@ use Nette\Http\IResponse;
 use Nette\Image;
 use Nette\Utils\Strings;
 use Tlapnet\Doxen\Component\DoxenControl;
+use Tlapnet\Doxen\Component\Event\AbstractEvent;
 use Tlapnet\Doxen\Component\IDecorator;
-use Tlapnet\Doxen\DocumentationMiner\DocTree;
 use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
 use Tlapnet\Doxen\DocumentationMiner\Node\FileNode;
 
@@ -22,6 +22,21 @@ class ParsedownDecorator implements IDecorator
 	 * @var string
 	 */
 	private $imageSignalType = 'showImage';
+
+
+	/**
+	 * @param AbstractEvent $event
+	 */
+	public function decorate($event)
+	{
+		if ($event->getType() === AbstractEvent::TYPE_CONTENT) {
+			$event->setContent($this->decorateContent($event->getContent(), $event->getControl()));
+		}
+
+		if ($event->getType() === AbstractEvent::TYPE_SIGNAL) {
+			$this->signalReceived($event->getSignal(), $event->getControl());
+		}
+	}
 
 
 	/**
@@ -72,7 +87,7 @@ class ParsedownDecorator implements IDecorator
 	 * @param string $imageLink
 	 * @return Image
 	 */
-	public function getImage($node, $imageLink)
+	private function getImage($node, $imageLink)
 	{
 		try {
 			// check if image path is part of original doc file content
@@ -105,20 +120,6 @@ class ParsedownDecorator implements IDecorator
 
 
 	/**
-	 * @param DocTree $docTree
-	 * @param DoxenControl $control
-	 */
-	public function decorateDocTree($docTree, $control){ }
-
-
-	/**
-	 * @param AbstractNode $node
-	 * @param DoxenControl $control
-	 */
-	public function decorateNode($node, $control){ }
-
-
-	/**
 	 * @return Image
 	 */
 	private function getErrorImage()
@@ -128,4 +129,6 @@ class ParsedownDecorator implements IDecorator
 
 		return $image;
 	}
+
+
 }
