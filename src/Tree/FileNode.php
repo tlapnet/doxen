@@ -2,15 +2,13 @@
 
 namespace Tlapnet\Doxen\DocumentationMiner\Node;
 
-class FileNode extends AbstractNode
+class FileNode extends TextNode
 {
-
 
 	/**
 	 * @var string
 	 */
 	private $filename;
-
 
 	/**
 	 * @param string $filename
@@ -20,24 +18,17 @@ class FileNode extends AbstractNode
 		$this->filename = $filename;
 	}
 
-
 	/**
 	 * @return string
 	 */
-	function getContent()
+	public function getContent()
 	{
-		return file_get_contents($this->filename);
+		if (!$this->content) {
+			$this->rawContent = $this->content = file_get_contents($this->filename);
+		}
+
+		return $this->content;
 	}
-
-
-	/**
-	 * @return array
-	 */
-	function getMetadata()
-	{
-		return [];
-	}
-
 
 	/**
 	 * @return string

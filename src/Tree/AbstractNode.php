@@ -6,6 +6,7 @@ namespace Tlapnet\Doxen\DocumentationMiner\Node;
 abstract class AbstractNode
 {
 
+	const PATH_SEPARATOR = '/';
 
 	const  TYPE_ROOT = 1;
 	const  TYPE_NODE = 2;
@@ -105,12 +106,15 @@ abstract class AbstractNode
 	/**
 	 * @param AbstractNode $parent
 	 */
-	public function setParent($parent)
+	public function setParent(AbstractNode $parent)
 	{
 		$this->parent = $parent;
+		$this->attached($this);
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function hasNodes()
 	{
 		return false;
@@ -170,7 +174,25 @@ abstract class AbstractNode
 		$this->metadata = $metadata;
 	}
 
-
+	/**
+	 * @return string
+	 */
 	abstract function getContent();
+
+	protected function attached(AbstractNode $node) {
+	}
+
+	/**
+	 * @return AbstractNode[]
+	 */
+	public function getParents() {
+		$tmp = $this;
+		$parents = [];
+		while (($parent = $tmp->getParent()) !== NULL) {
+			$parents[] = $parent;
+		}
+
+		return $parents;
+	}
 
 }

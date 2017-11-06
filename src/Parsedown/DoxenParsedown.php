@@ -3,28 +3,23 @@
 namespace Tlapnet\Doxen\Parsedown;
 
 
+use Nette\Application\UI\Control;
+
 class DoxenParsedown extends \Parsedown
 {
 
 
 	/**
-	 * @var \Nette\Application\UI\Control
+	 * @var Control
 	 */
 	private $control;
 
 	/**
-	 * @var string
+	 * @param Control $control
 	 */
-	private $imageSignalType;
-
-
-	/**
-	 * @param \Nette\Application\UI\Control $control
-	 */
-	public function __construct($control, $imageSignalType)
+	public function __construct(Control $control)
 	{
 		$this->control         = $control;
-		$this->imageSignalType = $imageSignalType;
 	}
 
 
@@ -43,7 +38,7 @@ class DoxenParsedown extends \Parsedown
 		// change relative link to control signal
 		if (empty(parse_url($link['element']['attributes']['href'], PHP_URL_SCHEME))) {
 			if (isset($Excerpt['is_image'])) {
-				$link['element']['attributes']['href'] = $this->control->link('event!', ['type' => $this->imageSignalType, 'imageLink' => $link['element']['attributes']['href']]);
+				$link['element']['attributes']['href'] = $this->control->link('event!', ['type' => ParsedownDecorator::SIGNAL_PARSEDOWN_IMAGE, 'imageLink' => $link['element']['attributes']['href']]);
 			}
 			else {
 				$link['element']['attributes']['href'] = $this->control->link('showPage!', ['page' => $link['element']['attributes']['href']]);

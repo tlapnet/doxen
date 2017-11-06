@@ -3,25 +3,26 @@
 namespace Tlapnet\Doxen\Component\Event;
 
 
-class SignalEvent extends AbstractEvent
-{
+use Tlapnet\Doxen\DocumentationMiner\DocTree;
 
+class SignalEvent extends DocTreeEvent
+{
 
 	/**
 	 * @var string
 	 */
 	private $signal;
 
-
 	/**
 	 * @param string $signal
 	 */
-	public function __construct($signal)
+	public function __construct(DocTree $docTree, $signal)
 	{
+		parent::__construct($docTree);
+
 		$this->type   = self::TYPE_SIGNAL;
 		$this->signal = $signal;
 	}
-
 
 	/**
 	 * @return string
@@ -30,6 +31,5 @@ class SignalEvent extends AbstractEvent
 	{
 		return $this->signal;
 	}
-
 
 }

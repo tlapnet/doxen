@@ -5,7 +5,7 @@
 	<ul>
 		{foreach $doc->getNodes() as $node}
 			<li>
-				<a n:href="showPage!, page => $node->getPath()">{$node->getTitle()}</a>
+				<a n:href="this, page => $node->getPath()">{$node->getTitle()}</a>
 			</li>
 		{/foreach}
 	</ul>

@@ -8,8 +8,9 @@ use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\Image;
 use Nette\Utils\Strings;
-use Tlapnet\Doxen\Component\DoxenControl;
 use Tlapnet\Doxen\Component\Event\AbstractEvent;
+use Tlapnet\Doxen\Component\Event\NodeEvent;
+use Tlapnet\Doxen\Component\Event\SignalEvent;
 use Tlapnet\Doxen\Component\IDecorator;
 use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
 use Tlapnet\Doxen\DocumentationMiner\Node\FileNode;
@@ -17,12 +18,7 @@ use Tlapnet\Doxen\DocumentationMiner\Node\FileNode;
 class ParsedownDecorator implements IDecorator
 {
 
-
-	/**
-	 * @var string
-	 */
-	private $imageSignalType = 'showImage';
-
+	const SIGNAL_PARSEDOWN_IMAGE = 'parsedown2image';
 
 	/**
 	 * @param AbstractEvent $event
@@ -30,55 +26,51 @@ class ParsedownDecorator implements IDecorator
 	public function decorate($event)
 	{
 		if ($event->getType() === AbstractEvent::TYPE_CONTENT) {
-			$event->setContent($this->decorateContent($event->getContent(), $event->getControl()));
-		}
-
-		if ($event->getType() === AbstractEvent::TYPE_SIGNAL) {
-			$this->signalReceived($event->getSignal(), $event->getControl());
+			$this->decorateNode($event);
+		} else if ($event->getType() === AbstractEvent::TYPE_SIGNAL) {
+			$this->decorateSignal($event);
 		}
 	}
 
 
-	/**
-	 * @param string $content
-	 * @param DoxenControl $control
-	 * @return string
-	 */
-	public function decorateContent($content, $control)
+	private function decorateNode(NodeEvent $event)
 	{
-		$parsedown = new DoxenParsedown($control, $this->imageSignalType);
+		if ($event->getNode()->getType() !== AbstractNode::TYPE_LEAF) return;
 
-		return $parsedown->text($content);
+		$parsedown = new DoxenParsedown($event->getControl());
+		$content = $parsedown->text($event->getNode()->getContent());
+		$event->getNode()->setContent($content);
 	}
 
-
-	/**
-	 * @param string $type
-	 * @param DoxenControl $control
-	 */
-	public function signalReceived($type, $control)
+	private function decorateSignal(SignalEvent $event)
 	{
-		if ($type === $this->imageSignalType) {
-			$docTree   = $control->getDocTree();
-			$imageNode = $docTree->getRootNode()->getNode($control->page);
-			$imageLink = $control->getParameter('imageLink', false);
-
-			// prepare image
-			if ($imageNode && $imageNode->getType() === AbstractNode::TYPE_LEAF && $imageLink) {
-				$image = $this->getImage($imageNode, $imageLink);
-			}
-			else {
-				$image = $this->getErrorImage();
-			}
-
-			// prepare and send image reponse
-			$response = new CallbackResponse(function (IRequest $httpRequest, IResponse $httpResponse) use ($image){
-				$httpResponse->addHeader('Content-Type', 'image/jpeg');
-				echo $image->toString(Image::JPEG, 94);
-			});
-
-			$control->getPresenter()->sendResponse($response);
+		if ($event->getSignal() === self::SIGNAL_PARSEDOWN_IMAGE) {
+			$this->processImage($event);
 		}
+	}
+
+	private function processImage(SignalEvent $event)
+	{
+		$docTree = $event->getDocTree();
+		$control = $event->getControl();
+
+		$imageNode = $docTree->getNode($control->page);
+		$imageLink = $control->getParameter('imageLink', FALSE);
+
+		// prepare image
+		if ($imageNode && $imageNode->getType() === AbstractNode::TYPE_LEAF && $imageLink) {
+			$image = $this->getImage($imageNode, $imageLink);
+		} else {
+			$image = $this->getErrorImage();
+		}
+
+		// prepare and send image reponse
+		$response = new CallbackResponse(function (IRequest $httpRequest, IResponse $httpResponse) use ($image) {
+			$httpResponse->addHeader('Content-Type', 'image/jpeg');
+			echo $image->toString(Image::JPEG, 94);
+		});
+
+		$control->getPresenter()->sendResponse($response);
 	}
 
 
@@ -87,15 +79,15 @@ class ParsedownDecorator implements IDecorator
 	 * @param string $imageLink
 	 * @return Image
 	 */
-	private function getImage($node, $imageLink)
+	private function getImage(FileNode $node, $imageLink)
 	{
 		try {
 			// check if image path is part of original doc file content
-			if (strpos($node->getContent(), $imageLink) === false) {
-				throw new InvalidArgumentException("Image path '$imageLink' is not a part of doc file '$docFilename' content");
+			if (strpos($node->getContent(), $imageLink) === FALSE) {
+				throw new InvalidArgumentException("Image path '$imageLink' is not a part of doc file '".$node->getFilename()."' content");
 			}
 
-			$dirname   = pathinfo($node->getFilename(), PATHINFO_DIRNAME);    // /doxen/docs/04_Komponenty/00_ACL
+			$dirname = pathinfo($node->getFilename(), PATHINFO_DIRNAME);    // /doxen/docs/04_Komponenty/00_ACL
 			$imagePath = $dirname . DIRECTORY_SEPARATOR . $imageLink; // /doxen/docs/04_Komponenty/00_ACL/images/database.png
 
 			// check if image file exists
@@ -110,14 +102,12 @@ class ParsedownDecorator implements IDecorator
 			}
 
 			$image = Image::fromFile($imagePath); // UnknownImageFileException if file is not image
-		}
-		catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$image = $this->getErrorImage();
 		}
 
 		return $image;
 	}
-
 
 	/**
 	 * @return Image
@@ -129,6 +119,5 @@ class ParsedownDecorator implements IDecorator
 
 		return $image;
 	}
-
 
 }

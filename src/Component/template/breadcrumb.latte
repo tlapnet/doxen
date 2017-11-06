@@ -4,7 +4,7 @@
 			{if $iterator->last}
 				{$node->getTitle()}
 			{else}
-				<a href="{link showPage!, page=>$node->getPath()}">{$node->getTitle()}</a>
+				<a href="{link this, page=>$node->getPath()}">{$node->getTitle()}</a>
 			{/if}
 		</li>
 	{/foreach}

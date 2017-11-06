@@ -40,7 +40,7 @@ class Config
 	/**
 	 * @param ITemplate $template
 	 */
-	public function setupTemplate($template)
+	public function setupTemplate(ITemplate $template)
 	{
 		$template->layoutTemplate     = $this->layoutTemplate;
 		$template->menuTemplate       = $this->menuTemplate;
@@ -48,7 +48,7 @@ class Config
 		$template->searchTemplate     = $this->searchTemplate;
 		$template->showBreadcrumb     = $this->showBreadcrumb;
 		$template->showMenu           = $this->showMenu;
-		$template->style              = file_get_contents($this->cssStyleFile);
+		$template->cssStyleFile       = $this->cssStyleFile;
 	}
 
 

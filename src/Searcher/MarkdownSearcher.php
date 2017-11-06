@@ -28,7 +28,7 @@ class MarkdownSearcher implements ISearcher
 			return [];
 		}
 
-		$this->setAvaiableFiles($docTree->getRootNode()->getNodes());
+		$this->setAvaiableFiles($docTree->getNodes());
 
 		$result = [];
 		foreach ($this->fileList as $path => $node) {

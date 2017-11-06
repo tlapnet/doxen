@@ -5,10 +5,12 @@ namespace Tlapnet\Doxen\Component;
 
 use Nette\Application\UI\Control;
 use Nette\Application\UI\ITemplate;
+use Nette\Bridges\ApplicationLatte\Template;
 use Tlapnet\Doxen\Component\Event\AbstractEvent;
 use Tlapnet\Doxen\Component\Event\ContentEvent;
 use Tlapnet\Doxen\Component\Event\DocTreeEvent;
 use Tlapnet\Doxen\Component\Event\NodeEvent;
+use Tlapnet\Doxen\Component\Event\SignalEvent;
 use Tlapnet\Doxen\DocumentationMiner\DocTree;
 use Tlapnet\Doxen\DocumentationMiner\DocumentationMiner;
 use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
@@ -39,7 +41,7 @@ class DoxenControl extends Control
 	private $searchQuery = null;
 
 	/** @var  Config */
-	private $controlConfig;
+	private $config;
 
 
 	/**
@@ -47,36 +49,18 @@ class DoxenControl extends Control
 	 */
 	public function __construct(DocTree $docTree, Config $config = null)
 	{
+		parent::__construct();
 		$this->docTree       = $docTree;
-		$this->controlConfig = $config ?: new Config();
+		$this->config = $config ?: new Config();
 	}
 
-
 	/**
-	 * @param IDecorator $decorator
+	 * @param ISearcher $searcher
 	 */
-	public function registerDecorator($decorator)
+	public function setSearcher(ISearcher $searcher)
 	{
-		$this->decorators[] = $decorator;
+		$this->searcher = $searcher;
 	}
-
-
-	/**
-	 * @param string $type
-	 */
-	public function handleEvent($type)
-	{
-		foreach ($this->decorators as $decorator) {
-			$decorator->signalReceived($type, $this);
-		}
-	}
-
-
-	/**
-	 * @param string $page
-	 */
-	public function handleShowPage($page){ }
-
 
 	public function handleSearch()
 	{
@@ -87,73 +71,29 @@ class DoxenControl extends Control
 		}
 	}
 
-
-	public function render()
+	/**
+	 * @param string $type
+	 */
+	public function handleEvent($type)
 	{
-		$this->decorate(new DocTreeEvent($this->docTree));
-		$template              = $this->createTemplate();
-		$template->hasSearcher = !is_null($this->searcher);
-		$template->docTree     = $this->docTree->getRootNode()->getNodes();
-		$this->controlConfig->setupTemplate($template);
-
-		if (is_null($this->searchResult)) {
-			$this->renderDoc($template);
-		}
-		else {
-			$this->renderSearch($template);
+		// @todo check type is filled
+		foreach ($this->decorators as $decorator) {
+			$decorator->decorate(new SignalEvent($this->docTree, $type));
 		}
 	}
-
 
 	/**
-	 * @param ITemplate $template
+	 * @param IDecorator $decorator
 	 */
-	private function renderDoc($template)
+	public function registerDecorator(IDecorator $decorator)
 	{
-		$page = $this->page;
-
-		// prepare template
-		$template->setFile($this->controlConfig->getDocTemplate());
-
-		// try setup page from homepage
-		if (empty($page)) {
-			$this->renderHomepage($template);
-		}
-		elseif ($this->docTree->getHomepage()->getPath() === $page) {
-			$this->renderHomepage($template);
-		}
-		else {
-			// try to found page in documentation
-			$breadcrumb = $this->docTree->getBreadcrumb($page);
-			if ($breadcrumb) {
-				$tmp  = array_values($breadcrumb);
-				$node = end($tmp); // get last item from $breadcrumb
-				$this->decorate(new NodeEvent($node));
-
-				// check if selected page contains documentation content or list of another documentations
-				if ($node->getType() === AbstractNode::TYPE_NODE) {
-					$template->doc = $node;
-					$template->setFile($this->controlConfig->getListTemplate());
-				}
-				else {
-					$template->doc = $this->decorate(new ContentEvent($node))->getContent();
-				}
-
-				$template->page       = $page;
-				$template->breadcrumb = $breadcrumb;
-				$template->render();
-			}
-			else {
-				$this->renderHomepage($template);
-			}
-		}
+		$this->decorators[] = $decorator;
 	}
-
 
 	/**
 	 * @param AbstractEvent $event
 	 */
-	public function decorate($event)
+	public function decorate(AbstractEvent $event)
 	{
 		$event->setControl($this);
 		foreach ($this->decorators as $decorator) {
@@ -163,11 +103,64 @@ class DoxenControl extends Control
 		return $event;
 	}
 
+	public function render()
+	{
+		$this->decorate(new DocTreeEvent($this->docTree));
 
-	/**
-	 * @param ITemplate $template
-	 */
-	private function renderHomepage($template)
+		$this->template->searcher    = $this->searcher;
+		$this->template->docTree     = $this->docTree;
+
+		$this->config->setupTemplate($this->template);
+
+		$this->template->addFilter('contents', function ($file) {
+			return file_get_contents($file);
+		});
+
+		if (is_null($this->searchResult)) {
+			$this->renderDoc();
+		}
+		else {
+			$this->renderSearch();
+		}
+	}
+
+
+	private function renderDoc()
+	{
+		// prepare template
+		$this->template->setFile($this->config->getDocTemplate());
+
+		// try setup page from homepage
+		if (empty($this->page)
+			|| $this->docTree->getHomepage()->getPath() === $this->page) {
+			$this->renderHomepage();
+		}
+		else {
+			$node = $this->docTree->getNode($this->page);
+
+			if ($node) {
+				$this->decorate(new NodeEvent($node));
+
+				// try to found page in documentation
+				$breadcrumbs = $this->docTree->getBreadcrumbs($node);
+
+				// check if selected page contains documentation content or list of another documentations
+				if ($node->getType() === AbstractNode::TYPE_NODE) {
+					$this->template->setFile($this->config->getListTemplate());
+				}
+
+				$this->template->doc = $node;
+				$this->template->page       = $this->page;
+				$this->template->breadcrumbs = $breadcrumbs;
+				$this->template->render();
+			}
+			else {
+				$this->renderHomepage();
+			}
+		}
+	}
+
+	private function renderHomepage()
 	{
 		$homepageNode = $this->docTree->getHomepage();
 		$this->decorate(new NodeEvent($homepageNode));
@@ -175,60 +168,25 @@ class DoxenControl extends Control
 //		another way how to deal with homepage breadcrumb
 //		$template->breadcrumb =  $homepageNode->getPath() ? $this->docTree->getBreadcrumb($homepageNode->getPath()) : [$homepageNode];
 
-		$template->breadcrumb = [$homepageNode];
-		$template->page       = $homepageNode->getPath();
+		$this->template->breadcrumb = [$homepageNode];
+		$this->template->doc = $homepageNode;
 
-		$event         = new ContentEvent($homepageNode);
-		$template->doc = $this->decorate($event)->getContent();
-
-		$template->render();
+		$this->template->render();
 	}
 
-
-	/**
-	 * @param ITemplate $template
-	 */
-	private function renderSearch($template)
+	private function renderSearch()
 	{
-		$template->setFile($this->controlConfig->getSearchTemplate());
-		$template->page         = '';
-		$template->searchQuery  = $this->searchQuery;
-		$template->searchResult = $this->searchResult;
+		$this->template->setFile($this->config->getSearchTemplate());
+		$this->template->page         = '';
+		$this->template->searchQuery  = $this->searchQuery;
+		$this->template->searchResult = $this->searchResult;
 
 		// setup breadcrumb
-		$node = new TextNode('');
+		$node = new TextNode();
 		$node->setTitle('Vyhledávání');
-		$template->breadcrumb = [$node];
+		$this->template->breadcrumb = [$node];
 
-		$template->render();
+		$this->template->render();
 	}
-
-
-	/**
-	 * @param ISearcher $searcher
-	 */
-	public function setSearcher($searcher)
-	{
-		$this->searcher = $searcher;
-	}
-
-
-	/**
-	 * @param Config $controlConfig
-	 */
-	public function setControlConfig($controlConfig)
-	{
-		$this->controlConfig = $controlConfig;
-	}
-
-
-	/**
-	 * @return DocTree
-	 */
-	public function getDocTree()
-	{
-		return $this->docTree;
-	}
-
 
 }
