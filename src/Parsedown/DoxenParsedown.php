@@ -41,7 +41,7 @@ class DoxenParsedown extends \Parsedown
 				$link['element']['attributes']['href'] = $this->control->link('event!', ['type' => ParsedownDecorator::SIGNAL_PARSEDOWN_IMAGE, 'imageLink' => $link['element']['attributes']['href']]);
 			}
 			else {
-				$link['element']['attributes']['href'] = $this->control->link('showPage!', ['page' => $link['element']['attributes']['href']]);
+				$link['element']['attributes']['href'] = $this->control->link('this', ['page' => $link['element']['attributes']['href']]);
 			}
 
 		}

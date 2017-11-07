@@ -3,7 +3,7 @@
 namespace Tlapnet\Doxen\Component\Event;
 
 
-use Tlapnet\Doxen\DocumentationMiner\DocTree;
+use Tlapnet\Doxen\Tree\DocTree;
 
 class DocTreeEvent extends AbstractEvent
 {

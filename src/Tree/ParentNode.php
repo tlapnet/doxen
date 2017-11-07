@@ -1,11 +1,10 @@
 <?php
 
-namespace Tlapnet\Doxen\DocumentationMiner\Node;
-
-use Nette\Utils\Strings;
+namespace Tlapnet\Doxen\Tree;
 
 class ParentNode extends AbstractNode
 {
+
 
 	/**
 	 * @var AbstractNode[]
@@ -62,7 +61,7 @@ class ParentNode extends AbstractNode
 	 */
 	public function getContent()
 	{
-		return NULL;
+		return null;
 	}
 
 }

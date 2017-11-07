@@ -3,7 +3,7 @@
 namespace Tlapnet\Doxen\Component\Event;
 
 
-use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
+use Tlapnet\Doxen\Tree\AbstractNode;
 
 class NodeEvent extends AbstractEvent
 {

@@ -8,7 +8,7 @@
 			<ul class="nav nav-pills nav-stacked">
 				{foreach $docTree as $node}
 					{var $isRoot = $node->getLevel() === 1}
-					{if $node->getType() === \Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode::TYPE_NODE}
+					{if $node->getType() === \Tlapnet\Doxen\Tree\AbstractNode::TYPE_NODE}
 						{if $isRoot}
 							<h5>{$node->getTitle()}</h5>
 						{else}
@@ -18,8 +18,8 @@
 							{include menu, docTree => $node->getNodes()}
 						</li>
 					{else}
-						<li n:class="$isRoot ? is-root, $page === $node->getPath() ? active">
-							<a n:href="showPage! $node->getPath()" title="{$node->getTitle()}">{$node->getTitle()}</a>
+						<li n:class="$isRoot ? is-root, $doc->getPath() === $node->getPath() ? active">
+							<a n:href="this, page=>$node->getPath()" title="{$node->getTitle()}">{$node->getTitle()}</a>
 						</li>
 					{/if}
 				{/foreach}

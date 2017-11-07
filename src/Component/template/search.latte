@@ -19,7 +19,7 @@
 		<ul style="padding-left: 0" class="nav nav-pills nav-stacked">
 			{foreach $searchResult as $result}
 				<li>
-					<a n:href="showPage!, $result->getNode()->getPath()">
+					<a n:href="this, page=>$result->getNode()->getPath()">
 						{foreach $result->getTitle() as $title}
 							<strong>{$title}{if !$iterator->last} → {/if}</strong>
 						{/foreach}

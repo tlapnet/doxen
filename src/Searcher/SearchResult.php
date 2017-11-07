@@ -3,7 +3,7 @@
 namespace Tlapnet\Doxen\Searcher;
 
 
-use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
+use Tlapnet\Doxen\Tree\AbstractNode;
 
 class SearchResult
 {

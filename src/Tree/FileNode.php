@@ -1,14 +1,16 @@
 <?php
 
-namespace Tlapnet\Doxen\DocumentationMiner\Node;
+namespace Tlapnet\Doxen\Tree;
 
 class FileNode extends TextNode
 {
+
 
 	/**
 	 * @var string
 	 */
 	private $filename;
+
 
 	/**
 	 * @param string $filename
@@ -17,6 +19,7 @@ class FileNode extends TextNode
 	{
 		$this->filename = $filename;
 	}
+
 
 	/**
 	 * @return string
@@ -29,6 +32,7 @@ class FileNode extends TextNode
 
 		return $this->content;
 	}
+
 
 	/**
 	 * @return string

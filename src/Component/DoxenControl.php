@@ -4,19 +4,17 @@ namespace Tlapnet\Doxen\Component;
 
 
 use Nette\Application\UI\Control;
-use Nette\Application\UI\ITemplate;
-use Nette\Bridges\ApplicationLatte\Template;
 use Tlapnet\Doxen\Component\Event\AbstractEvent;
 use Tlapnet\Doxen\Component\Event\ContentEvent;
 use Tlapnet\Doxen\Component\Event\DocTreeEvent;
 use Tlapnet\Doxen\Component\Event\NodeEvent;
 use Tlapnet\Doxen\Component\Event\SignalEvent;
-use Tlapnet\Doxen\DocumentationMiner\DocTree;
-use Tlapnet\Doxen\DocumentationMiner\DocumentationMiner;
-use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
-use Tlapnet\Doxen\DocumentationMiner\Node\TextNode;
 use Tlapnet\Doxen\Searcher\ISearcher;
 use Tlapnet\Doxen\Searcher\SearchResult;
+use Tlapnet\Doxen\Tree\AbstractNode;
+use Tlapnet\Doxen\Tree\DocTree;
+use Tlapnet\Doxen\Tree\DocumentationMiner;
+use Tlapnet\Doxen\Tree\TextNode;
 
 class DoxenControl extends Control
 {
@@ -50,9 +48,10 @@ class DoxenControl extends Control
 	public function __construct(DocTree $docTree, Config $config = null)
 	{
 		parent::__construct();
-		$this->docTree       = $docTree;
-		$this->config = $config ?: new Config();
+		$this->docTree = $docTree;
+		$this->config  = $config ?: new Config();
 	}
+
 
 	/**
 	 * @param ISearcher $searcher
@@ -61,6 +60,7 @@ class DoxenControl extends Control
 	{
 		$this->searcher = $searcher;
 	}
+
 
 	public function handleSearch()
 	{
@@ -71,16 +71,17 @@ class DoxenControl extends Control
 		}
 	}
 
+
 	/**
 	 * @param string $type
 	 */
 	public function handleEvent($type)
 	{
-		// @todo check type is filled
-		foreach ($this->decorators as $decorator) {
-			$decorator->decorate(new SignalEvent($this->docTree, $type));
+		if (!empty($type)) {
+			$this->decorate(new SignalEvent($this->docTree, $type));
 		}
 	}
+
 
 	/**
 	 * @param IDecorator $decorator
@@ -89,6 +90,7 @@ class DoxenControl extends Control
 	{
 		$this->decorators[] = $decorator;
 	}
+
 
 	/**
 	 * @param AbstractEvent $event
@@ -103,16 +105,17 @@ class DoxenControl extends Control
 		return $event;
 	}
 
+
 	public function render()
 	{
 		$this->decorate(new DocTreeEvent($this->docTree));
 
-		$this->template->searcher    = $this->searcher;
-		$this->template->docTree     = $this->docTree;
+		$this->template->searcher = $this->searcher;
+		$this->template->docTree  = $this->docTree;
 
 		$this->config->setupTemplate($this->template);
 
-		$this->template->addFilter('contents', function ($file) {
+		$this->template->addFilter('contents', function ($file){
 			return file_get_contents($file);
 		});
 
@@ -141,17 +144,14 @@ class DoxenControl extends Control
 			if ($node) {
 				$this->decorate(new NodeEvent($node));
 
-				// try to found page in documentation
-				$breadcrumbs = $this->docTree->getBreadcrumbs($node);
-
 				// check if selected page contains documentation content or list of another documentations
 				if ($node->getType() === AbstractNode::TYPE_NODE) {
 					$this->template->setFile($this->config->getListTemplate());
 				}
 
-				$this->template->doc = $node;
+				$this->template->doc        = $node;
 				$this->template->page       = $this->page;
-				$this->template->breadcrumbs = $breadcrumbs;
+				$this->template->breadcrumb = $this->docTree->getBreadcrumbs($node);
 				$this->template->render();
 			}
 			else {
@@ -159,6 +159,7 @@ class DoxenControl extends Control
 			}
 		}
 	}
+
 
 	private function renderHomepage()
 	{
@@ -169,10 +170,11 @@ class DoxenControl extends Control
 //		$template->breadcrumb =  $homepageNode->getPath() ? $this->docTree->getBreadcrumb($homepageNode->getPath()) : [$homepageNode];
 
 		$this->template->breadcrumb = [$homepageNode];
-		$this->template->doc = $homepageNode;
+		$this->template->doc        = $homepageNode;
 
 		$this->template->render();
 	}
+
 
 	private function renderSearch()
 	{
@@ -185,6 +187,7 @@ class DoxenControl extends Control
 		$node = new TextNode();
 		$node->setTitle('Vyhledávání');
 		$this->template->breadcrumb = [$node];
+		$this->template->doc        = $node;
 
 		$this->template->render();
 	}

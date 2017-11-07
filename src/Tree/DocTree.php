@@ -1,11 +1,9 @@
 <?php
 
-namespace Tlapnet\Doxen\DocumentationMiner;
+namespace Tlapnet\Doxen\Tree;
 
 
 use ArrayIterator;
-use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
-use Tlapnet\Doxen\DocumentationMiner\Node\RootNode;
 
 class DocTree implements \IteratorAggregate
 {
@@ -22,17 +20,27 @@ class DocTree implements \IteratorAggregate
 	 */
 	private $rootNode;
 
+
 	public function __construct()
 	{
 		$this->rootNode = new RootNode();
 	}
 
 
+	/**
+	 * @param string $path
+	 * @return AbstractNode
+	 */
 	public function getNode($path)
 	{
 		return $this->rootNode->getNode($path);
 	}
 
+
+	/**
+	 * @param AbstractNode $node
+	 * @return AbstractNode[]
+	 */
 	public function getBreadcrumbs(AbstractNode $node)
 	{
 		$parents = $node->getParents();
@@ -43,6 +51,7 @@ class DocTree implements \IteratorAggregate
 		return array_reverse($breadcrumb);
 	}
 
+
 	/**
 	 * @param AbstractNode $homepage
 	 */
@@ -50,6 +59,7 @@ class DocTree implements \IteratorAggregate
 	{
 		$this->homepage = $homepage;
 	}
+
 
 	/**
 	 * @return AbstractNode
@@ -59,6 +69,7 @@ class DocTree implements \IteratorAggregate
 		return $this->homepage;
 	}
 
+
 	/**
 	 * @return AbstractNode[]
 	 */
@@ -67,6 +78,7 @@ class DocTree implements \IteratorAggregate
 		return $this->rootNode->getNodes();
 	}
 
+
 	/**
 	 * @param AbstractNode $node
 	 */
@@ -74,6 +86,7 @@ class DocTree implements \IteratorAggregate
 	{
 		$this->rootNode->addNode($node);
 	}
+
 
 	/**
 	 * @return ArrayIterator

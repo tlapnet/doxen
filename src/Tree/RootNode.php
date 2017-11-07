@@ -1,6 +1,6 @@
 <?php
 
-namespace Tlapnet\Doxen\DocumentationMiner\Node;
+namespace Tlapnet\Doxen\Tree;
 
 
 class RootNode extends ParentNode
@@ -19,14 +19,16 @@ class RootNode extends ParentNode
 		$this->type = AbstractNode::TYPE_ROOT;
 	}
 
+
 	/**
 	 * @param string $path
 	 * @return AbstractNode
 	 */
 	public function getNode($path)
 	{
-		return array_key_exists($path, $this->paths) ? $this->paths[$path] : NULL;
+		return array_key_exists($path, $this->paths) ? $this->paths[$path] : null;
 	}
+
 
 	/**
 	 * @param AbstractNode $node

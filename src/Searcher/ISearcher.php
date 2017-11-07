@@ -2,8 +2,8 @@
 
 namespace Tlapnet\Doxen\Searcher;
 
-use Tlapnet\Doxen\DocumentationMiner\Node\AbstractNode;
-use Tlapnet\Doxen\DocumentationMiner\DocTree;
+use Tlapnet\Doxen\Tree\AbstractNode;
+use Tlapnet\Doxen\Tree\DocTree;
 
 interface ISearcher
 {

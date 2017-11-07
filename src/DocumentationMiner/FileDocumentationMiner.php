@@ -4,9 +4,10 @@
 namespace Tlapnet\Doxen\DocumentationMiner;
 
 use Nette\Utils\Finder;
-use Tlapnet\Doxen\DocumentationMiner\Node\FileNode;
-use Tlapnet\Doxen\DocumentationMiner\Node\ParentNode;
-use Tlapnet\Doxen\DocumentationMiner\Node\TextNode;
+use Tlapnet\Doxen\Tree\DocTree;
+use Tlapnet\Doxen\Tree\FileNode;
+use Tlapnet\Doxen\Tree\ParentNode;
+use Tlapnet\Doxen\Tree\TextNode;
 
 
 class FileDocumentationMiner implements IDocumentationMiner
@@ -26,12 +27,12 @@ class FileDocumentationMiner implements IDocumentationMiner
 	/**
 	 * @var null | FileNode
 	 */
-	private $homepage = NULL;
+	private $homepage = null;
 
 	/**
 	 * @var null | array
 	 */
-	private $docTree = NULL;
+	private $docTree = null;
 
 
 	/** public *****************************************************************/
@@ -78,17 +79,20 @@ class FileDocumentationMiner implements IDocumentationMiner
 			$content = $this->config['home']['content'];
 			if (is_file($content)) {
 				if ($this->homepage && realpath($this->homepage->getFilename()) === realpath($content)) {
-					$homepage = $this->homepage;
-				} else {
+					$homepage = clone $this->homepage;
+				}
+				else {
 					$homepage = new FileNode($content);
 					$homepage->setTitle($this->normalizePathname($content));
 				}
-			} else {
+			}
+			else {
 				$homepage = new TextNode($content);
 				$homepage->setTitle('Homepage');
 			}
-		} elseif ($this->homepage) {
-			$homepage = $this->homepage;
+		}
+		elseif ($this->homepage) {
+			$homepage = clone $this->homepage;
 		}
 
 		// setup title
@@ -114,7 +118,8 @@ class FileDocumentationMiner implements IDocumentationMiner
 				$node->setTitle($k);
 				$tree->addNode($node);
 				$this->createNodes($v, $node);
-			} else {
+			}
+			else {
 				$tree->addNode($this->createFileNode($k, $v));
 			}
 		}
@@ -136,7 +141,8 @@ class FileDocumentationMiner implements IDocumentationMiner
 				$node->setTitle($k);
 				$parentNode->addNode($node);
 				$this->createNodes($v, $node);
-			} else {
+			}
+			else {
 				$parentNode->addNode($this->createFileNode($k, $v));
 			}
 		}
@@ -157,10 +163,11 @@ class FileDocumentationMiner implements IDocumentationMiner
 
 		if (isset($this->config['home']['content']) && realpath($filename) === realpath($this->config['home']['content'])) {
 			// save current path as path to homepage file
-			$this->homepage = clone $fileNode;
-		} elseif (empty($this->homepage)) {
+			$this->homepage = $fileNode;
+		}
+		elseif (empty($this->homepage)) {
 			// if homepage is not set by configuration then first file from scanned directory is used
-			$this->homepage = clone $fileNode;
+			$this->homepage = $fileNode;
 		}
 
 		return $fileNode;
@@ -177,8 +184,9 @@ class FileDocumentationMiner implements IDocumentationMiner
 		foreach ($doc as $key => $value) {
 			if (is_string($key)) { // key is menu title
 				$result[$key] = $this->loadDocFiles($value);
-			} else { // key is path to folder
-				$found = $this->findFilesAndFolders($value);
+			}
+			else { // key is path to folder
+				$found  = $this->findFilesAndFolders($value);
 				$result = array_merge($result, is_array($found) ? $found : [$found]);
 			}
 		}
@@ -195,19 +203,20 @@ class FileDocumentationMiner implements IDocumentationMiner
 	{
 		$result = [];
 		if (is_dir($docPath)) {
-			$resultFiles = [];
+			$resultFiles       = [];
 			$resultDirectories = [];
-			$hasSubdoc = FALSE;
+			$hasSubdoc         = false;
 			foreach (Finder::findDirectories('*')->in($docPath) as $path => $file) {
 				$subdoc = $this->findFilesAndFolders($path); // check for some documentation files in subdirectory (this skips /images etc. directories)
 				if (!empty($subdoc)) {
 					$key = $this->normalizePathname(basename($path));
 					if (is_array($subdoc)) {
 						$resultDirectories[$key] = $subdoc;
-					} else {
+					}
+					else {
 						$resultFiles[$key] = $subdoc;
 					}
-					$hasSubdoc = TRUE;
+					$hasSubdoc = true;
 				}
 			}
 
@@ -222,7 +231,8 @@ class FileDocumentationMiner implements IDocumentationMiner
 			if (!$hasSubdoc && count($files) === 1) {
 				$result = array_shift($result);
 			}
-		} elseif (is_file($docPath)) {
+		}
+		elseif (is_file($docPath)) {
 			$result[$this->normalizePathname(pathinfo($docPath, PATHINFO_FILENAME))] = $docPath;
 		}
 

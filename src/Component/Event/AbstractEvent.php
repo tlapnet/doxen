@@ -12,8 +12,7 @@ class AbstractEvent
 
 	const TYPE_DOCTREE = 1;
 	const TYPE_NODE    = 2;
-	const TYPE_CONTENT = 3;
-	const TYPE_SIGNAL  = 4;
+	const TYPE_SIGNAL  = 3;
 
 	/**
 	 * @var int

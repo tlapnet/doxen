@@ -1,12 +1,11 @@
 <?php
 
-namespace Tlapnet\Doxen\DocumentationMiner\Node;
+namespace Tlapnet\Doxen\Tree;
 
-
-use Nette\Utils\Strings;
 
 class TextNode extends AbstractNode
 {
+
 
 	/**
 	 * @var string
@@ -16,6 +15,7 @@ class TextNode extends AbstractNode
 	/** @var string */
 	protected $rawContent;
 
+
 	/**
 	 * @return string
 	 */
@@ -23,6 +23,7 @@ class TextNode extends AbstractNode
 	{
 		return $this->content;
 	}
+
 
 	/**
 	 * @param string $content
@@ -32,6 +33,7 @@ class TextNode extends AbstractNode
 		$this->content = $content;
 	}
 
+
 	/**
 	 * @return string
 	 */
@@ -39,26 +41,4 @@ class TextNode extends AbstractNode
 	{
 		return $this->rawContent;
 	}
-
-	/**
-	 * @param ParentNode $parent
-	 */
-	public function setParent(AbstractNode $parent)
-	{
-		$nodeId = Strings::webalize($this->getTitle());
-		$parents = $this->getParents();
-		$ids = [];
-
-		foreach ($parents as $parent) {
-			$ids[] = $parent->getId();
-		}
-
-		$nodePath = ltrim(implode(self::PATH_SEPARATOR, array_reverse($ids)), self::PATH_SEPARATOR);
-		$this->setId($nodeId);
-		$this->setPath($nodePath);
-		$this->setLevel(count($parents));
-
-		parent::setParent($parent);
-	}
-
 }

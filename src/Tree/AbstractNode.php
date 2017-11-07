@@ -1,10 +1,13 @@
 <?php
 
-namespace Tlapnet\Doxen\DocumentationMiner\Node;
+namespace Tlapnet\Doxen\Tree;
 
+
+use Nette\Utils\Strings;
 
 abstract class AbstractNode
 {
+
 
 	const PATH_SEPARATOR = '/';
 
@@ -109,8 +112,21 @@ abstract class AbstractNode
 	public function setParent(AbstractNode $parent)
 	{
 		$this->parent = $parent;
-		$this->attached($this);
+		$nodeId       = Strings::webalize($this->getTitle());
+		$parents      = $this->getParents();
+		$ids          = [$nodeId];
+
+		foreach ($parents as $parent) {
+			$ids[] = $parent->getId();
+		}
+
+		$nodePath = ltrim(implode(self::PATH_SEPARATOR, array_reverse($ids)), self::PATH_SEPARATOR);
+		$this->setId($nodeId);
+		$this->setPath($nodePath);
+		$this->setLevel(count($parents));
+		$parent->attached($this);
 	}
+
 
 	/**
 	 * @return bool
@@ -174,22 +190,28 @@ abstract class AbstractNode
 		$this->metadata = $metadata;
 	}
 
+
 	/**
 	 * @return string
 	 */
 	abstract function getContent();
 
-	protected function attached(AbstractNode $node) {
+
+	protected function attached(AbstractNode $node)
+	{
 	}
+
 
 	/**
 	 * @return AbstractNode[]
 	 */
-	public function getParents() {
-		$tmp = $this;
+	public function getParents()
+	{
+		$tmp     = $this;
 		$parents = [];
-		while (($parent = $tmp->getParent()) !== NULL) {
+		while (($parent = $tmp->getParent()) !== null) {
 			$parents[] = $parent;
+			$tmp       = $parent;
 		}
 
 		return $parents;
