@@ -186,7 +186,7 @@ class FileDocumentationMiner implements IDocumentationMiner
 				$result[$key] = $this->loadDocFiles($value);
 			}
 			else { // key is path to folder
-				$found  = $this->findFilesAndFolders($value);
+				$found  = $this->findFilesAndFolders($value, true);
 				$result = array_merge($result, is_array($found) ? $found : [$found]);
 			}
 		}
@@ -199,7 +199,7 @@ class FileDocumentationMiner implements IDocumentationMiner
 	 * @param string $docPath
 	 * @return string | array
 	 */
-	private function findFilesAndFolders($docPath)
+	private function findFilesAndFolders($docPath, $isRoot = false)
 	{
 		$result = [];
 		if (is_dir($docPath)) {
@@ -228,7 +228,7 @@ class FileDocumentationMiner implements IDocumentationMiner
 			$result = $resultFiles + $resultDirectories;
 
 			// in case only one file and no folder was found in directory, return file directly
-			if (!$hasSubdoc && count($files) === 1) {
+			if (!$hasSubdoc && count($files) === 1 && !$isRoot) {
 				$result = array_shift($result);
 			}
 		}
