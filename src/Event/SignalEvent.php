@@ -1,26 +1,24 @@
 <?php
 
-namespace Tlapnet\Doxen\Component\Event;
-
+namespace Tlapnet\Doxen\Event;
 
 use Tlapnet\Doxen\Tree\DocTree;
 
-class SignalEvent extends DocTreeEvent
+final class SignalEvent extends DocTreeEvent
 {
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $signal;
 
 	/**
+	 * @param DocTree $docTree
 	 * @param string $signal
 	 */
 	public function __construct(DocTree $docTree, $signal)
 	{
 		parent::__construct($docTree);
 
-		$this->type   = self::TYPE_SIGNAL;
+		$this->type = self::TYPE_SIGNAL;
 		$this->signal = $signal;
 	}
 

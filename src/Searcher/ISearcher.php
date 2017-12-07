@@ -8,12 +8,11 @@ use Tlapnet\Doxen\Tree\DocTree;
 interface ISearcher
 {
 
-
 	/**
 	 * @param DocTree $docTree
 	 * @param string $query
 	 * @return AbstractNode[]
 	 */
-	public function search($doctree, $query);
+	public function search(DocTree $docTree, $query);
 
 }

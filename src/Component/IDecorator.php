@@ -2,17 +2,15 @@
 
 namespace Tlapnet\Doxen\Component;
 
-
 use Tlapnet\Doxen\Component\Event\AbstractEvent;
 
 interface IDecorator
 {
 
-
 	/**
 	 * @param AbstractEvent $event
+	 * @return void
 	 */
-	public function decorate($event);
-
+	public function decorate(AbstractEvent $event);
 
 }

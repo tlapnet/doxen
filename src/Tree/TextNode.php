@@ -2,19 +2,14 @@
 
 namespace Tlapnet\Doxen\Tree;
 
-
 class TextNode extends AbstractNode
 {
 
-
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $content;
 
 	/** @var string */
 	protected $rawContent;
-
 
 	/**
 	 * @return string
@@ -24,15 +19,14 @@ class TextNode extends AbstractNode
 		return $this->content;
 	}
 
-
 	/**
 	 * @param string $content
+	 * @return void
 	 */
 	public function setContent($content)
 	{
 		$this->content = $content;
 	}
-
 
 	/**
 	 * @return string
@@ -41,4 +35,5 @@ class TextNode extends AbstractNode
 	{
 		return $this->rawContent;
 	}
+
 }

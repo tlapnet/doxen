@@ -2,10 +2,8 @@
 
 namespace Tlapnet\Doxen\Component;
 
-
 use Nette\Application\UI\Control;
 use Tlapnet\Doxen\Component\Event\AbstractEvent;
-use Tlapnet\Doxen\Component\Event\ContentEvent;
 use Tlapnet\Doxen\Component\Event\DocTreeEvent;
 use Tlapnet\Doxen\Component\Event\NodeEvent;
 use Tlapnet\Doxen\Component\Event\SignalEvent;
@@ -13,67 +11,69 @@ use Tlapnet\Doxen\Searcher\ISearcher;
 use Tlapnet\Doxen\Searcher\SearchResult;
 use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\DocTree;
-use Tlapnet\Doxen\Tree\DocumentationMiner;
 use Tlapnet\Doxen\Tree\TextNode;
 
 class DoxenControl extends Control
 {
 
-
 	/** @var string @persistent */
 	public $page;
 
-	/** @var  DocTree */
+	/** @var DocTree */
 	private $docTree;
 
 	/** @var IDecorator[] */
 	private $decorators = [];
 
-	/** @var  ISearcher */
+	/** @var ISearcher */
 	private $searcher;
 
-	/** @var null | SearchResult[] */
-	private $searchResult = null;
+	/** @var SearchResult[] */
+	private $searchResult = NULL;
 
-	/** @var null | string */
-	private $searchQuery = null;
+	/** @var string */
+	private $searchQuery = NULL;
 
-	/** @var  Config */
+	/** @var Config */
 	private $config;
-
 
 	/**
 	 * @param DocTree $docTree
+	 * @param Config $config
 	 */
-	public function __construct(DocTree $docTree, Config $config = null)
+	public function __construct(DocTree $docTree, Config $config = NULL)
 	{
 		parent::__construct();
 		$this->docTree = $docTree;
-		$this->config  = $config ?: new Config();
+		$this->config = $config ?: new Config();
 	}
-
 
 	/**
 	 * @param ISearcher $searcher
+	 * @return void
 	 */
 	public function setSearcher(ISearcher $searcher)
 	{
 		$this->searcher = $searcher;
 	}
 
-
+	/**
+	 * Handle incoming search request
+	 *
+	 * @return void
+	 */
 	public function handleSearch()
 	{
 		$query = $this->getPresenter()->getHttpRequest()->getPost('query');
 		if ($this->searcher && !is_null($query)) {
-			$this->searchQuery  = $query;
+			$this->searchQuery = $query;
 			$this->searchResult = $this->searcher->search($this->docTree, $query);
 		}
 	}
 
-
 	/**
 	 * @param string $type
+	 * @return void
 	 */
 	public function handleEvent($type)
 	{
@@ -82,18 +82,18 @@ class DoxenControl extends Control
 		}
 	}
 
-
 	/**
 	 * @param IDecorator $decorator
+	 * @return void
 	 */
 	public function registerDecorator(IDecorator $decorator)
 	{
 		$this->decorators[] = $decorator;
 	}
 
-
 	/**
 	 * @param AbstractEvent $event
+	 * @return AbstractEvent
 	 */
 	public function decorate(AbstractEvent $event)
 	{
@@ -105,29 +105,40 @@ class DoxenControl extends Control
 		return $event;
 	}
 
+	/**
+	 * RENDERERS ***************************************************************
+	 */
 
+	/**
+	 * Main render entrypoint
+	 *
+	 * @return void
+	 */
 	public function render()
 	{
 		$this->decorate(new DocTreeEvent($this->docTree));
 
 		$this->template->searcher = $this->searcher;
-		$this->template->docTree  = $this->docTree;
+		$this->template->docTree = $this->docTree;
 
 		$this->config->setupTemplate($this->template);
 
-		$this->template->addFilter('contents', function ($file){
+		$this->template->addFilter('contents', function ($file) {
 			return file_get_contents($file);
 		});
 
 		if (is_null($this->searchResult)) {
 			$this->renderDoc();
-		}
-		else {
+		} else {
 			$this->renderSearch();
 		}
 	}
 
-
+	/**
+	 * Render single page
+	 *
+	 * @return void
+	 */
 	private function renderDoc()
 	{
 		// prepare template
@@ -137,8 +148,7 @@ class DoxenControl extends Control
 		if (empty($this->page)
 			|| $this->docTree->getHomepage()->getPath() === $this->page) {
 			$this->renderHomepage();
-		}
-		else {
+		} else {
 			$node = $this->docTree->getNode($this->page);
 
 			if ($node) {
@@ -149,18 +159,21 @@ class DoxenControl extends Control
 					$this->template->setFile($this->config->getListTemplate());
 				}
 
-				$this->template->doc        = $node;
-				$this->template->page       = $this->page;
+				$this->template->doc = $node;
+				$this->template->page = $this->page;
 				$this->template->breadcrumb = $this->docTree->getBreadcrumbs($node);
 				$this->template->render();
-			}
-			else {
+			} else {
 				$this->renderHomepage();
 			}
 		}
 	}
 
-
+	/**
+	 * Render homepage
+	 *
+	 * @return void
+	 */
 	private function renderHomepage()
 	{
 		$homepageNode = $this->docTree->getHomepage();
@@ -170,24 +183,28 @@ class DoxenControl extends Control
 //		$template->breadcrumb =  $homepageNode->getPath() ? $this->docTree->getBreadcrumb($homepageNode->getPath()) : [$homepageNode];
 
 		$this->template->breadcrumb = [$homepageNode];
-		$this->template->doc        = $homepageNode;
+		$this->template->doc = $homepageNode;
 
 		$this->template->render();
 	}
 
-
+	/**
+	 * Render search
+	 *
+	 * @return void
+	 */
 	private function renderSearch()
 	{
 		$this->template->setFile($this->config->getSearchTemplate());
-		$this->template->page         = '';
-		$this->template->searchQuery  = $this->searchQuery;
+		$this->template->page = '';
+		$this->template->searchQuery = $this->searchQuery;
 		$this->template->searchResult = $this->searchResult;
 
 		// setup breadcrumb
 		$node = new TextNode();
 		$node->setTitle('Vyhledávání');
 		$this->template->breadcrumb = [$node];
-		$this->template->doc        = $node;
+		$this->template->doc = $node;
 
 		$this->template->render();
 	}

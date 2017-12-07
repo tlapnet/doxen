@@ -1,7 +1,6 @@
 <?php
 
-
-namespace Tlapnet\Doxen\DocumentationMiner;
+namespace Tlapnet\Doxen\Miner;
 
 use Nette\Utils\Finder;
 use Tlapnet\Doxen\Tree\DocTree;
@@ -9,34 +8,20 @@ use Tlapnet\Doxen\Tree\FileNode;
 use Tlapnet\Doxen\Tree\ParentNode;
 use Tlapnet\Doxen\Tree\TextNode;
 
-
-class FileDocumentationMiner implements IDocumentationMiner
+final class FileDocumentationMiner implements IDocumentationMiner
 {
 
-
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	private $supportedDocMask = ['*.md'];
 
-	/**
-	 * @var array parsed configuration neon file
-	 */
-	private $config;
+	/** @var array parsed configuration neon file */
+	private $config = [];
 
-	/**
-	 * @var null | FileNode
-	 */
-	private $homepage = null;
+	/** @var FileNode */
+	private $homepage = NULL;
 
-	/**
-	 * @var null | array
-	 */
-	private $docTree = null;
-
-
-	/** public *****************************************************************/
-
+	/** @var array */
+	private $docTree = NULL;
 
 	/**
 	 * @param array $config
@@ -46,6 +31,9 @@ class FileDocumentationMiner implements IDocumentationMiner
 		$this->config = $config;
 	}
 
+	/**
+	 * API *********************************************************************
+	 */
 
 	/**
 	 * @return DocTree
@@ -62,9 +50,9 @@ class FileDocumentationMiner implements IDocumentationMiner
 		return $this->docTree;
 	}
 
-
-	/** private *****************************************************************/
-
+	/**
+	 * HELPERS *********************************************************************
+	 */
 
 	/**
 	 * @return FileNode|TextNode
@@ -80,18 +68,15 @@ class FileDocumentationMiner implements IDocumentationMiner
 			if (is_file($content)) {
 				if ($this->homepage && realpath($this->homepage->getFilename()) === realpath($content)) {
 					$homepage = clone $this->homepage;
-				}
-				else {
+				} else {
 					$homepage = new FileNode($content);
 					$homepage->setTitle($this->normalizePathname($content));
 				}
-			}
-			else {
+			} else {
 				$homepage = new TextNode($content);
 				$homepage->setTitle('Homepage');
 			}
-		}
-		elseif ($this->homepage) {
+		} elseif ($this->homepage) {
 			$homepage = clone $this->homepage;
 		}
 
@@ -102,7 +87,6 @@ class FileDocumentationMiner implements IDocumentationMiner
 
 		return $homepage;
 	}
-
 
 	/**
 	 * @param array $docFiles
@@ -118,15 +102,13 @@ class FileDocumentationMiner implements IDocumentationMiner
 				$node->setTitle($k);
 				$tree->addNode($node);
 				$this->createNodes($v, $node);
-			}
-			else {
+			} else {
 				$tree->addNode($this->createFileNode($k, $v));
 			}
 		}
 
 		return $tree;
 	}
-
 
 	/**
 	 * @param array $docFiles
@@ -141,15 +123,13 @@ class FileDocumentationMiner implements IDocumentationMiner
 				$node->setTitle($k);
 				$parentNode->addNode($node);
 				$this->createNodes($v, $node);
-			}
-			else {
+			} else {
 				$parentNode->addNode($this->createFileNode($k, $v));
 			}
 		}
 
 		return $parentNode;
 	}
-
 
 	/**
 	 * @param string $title
@@ -164,15 +144,13 @@ class FileDocumentationMiner implements IDocumentationMiner
 		if (isset($this->config['home']['content']) && realpath($filename) === realpath($this->config['home']['content'])) {
 			// save current path as path to homepage file
 			$this->homepage = $fileNode;
-		}
-		elseif (empty($this->homepage)) {
+		} elseif (empty($this->homepage)) {
 			// if homepage is not set by configuration then first file from scanned directory is used
 			$this->homepage = $fileNode;
 		}
 
 		return $fileNode;
 	}
-
 
 	/**
 	 * @param array $doc
@@ -184,9 +162,8 @@ class FileDocumentationMiner implements IDocumentationMiner
 		foreach ($doc as $key => $value) {
 			if (is_string($key)) { // key is menu title
 				$result[$key] = $this->loadDocFiles($value);
-			}
-			else { // key is path to folder
-				$found  = $this->findFilesAndFolders($value, true);
+			} else { // key is path to folder
+				$found = $this->findFilesAndFolders($value, TRUE);
 				$result = array_merge($result, is_array($found) ? $found : [$found]);
 			}
 		}
@@ -194,29 +171,28 @@ class FileDocumentationMiner implements IDocumentationMiner
 		return $result;
 	}
 
-
 	/**
 	 * @param string $docPath
+	 * @param bool $isRoot
 	 * @return string | array
 	 */
-	private function findFilesAndFolders($docPath, $isRoot = false)
+	private function findFilesAndFolders($docPath, $isRoot = FALSE)
 	{
 		$result = [];
 		if (is_dir($docPath)) {
-			$resultFiles       = [];
+			$resultFiles = [];
 			$resultDirectories = [];
-			$hasSubdoc         = false;
+			$hasSubdoc = FALSE;
 			foreach (Finder::findDirectories('*')->in($docPath) as $path => $file) {
 				$subdoc = $this->findFilesAndFolders($path); // check for some documentation files in subdirectory (this skips /images etc. directories)
 				if (!empty($subdoc)) {
 					$key = $this->normalizePathname(basename($path));
 					if (is_array($subdoc)) {
 						$resultDirectories[$key] = $subdoc;
-					}
-					else {
+					} else {
 						$resultFiles[$key] = $subdoc;
 					}
-					$hasSubdoc = true;
+					$hasSubdoc = TRUE;
 				}
 			}
 
@@ -231,14 +207,12 @@ class FileDocumentationMiner implements IDocumentationMiner
 			if (!$hasSubdoc && count($files) === 1 && !$isRoot) {
 				$result = array_shift($result);
 			}
-		}
-		elseif (is_file($docPath)) {
+		} elseif (is_file($docPath)) {
 			$result[$this->normalizePathname(pathinfo($docPath, PATHINFO_FILENAME))] = $docPath;
 		}
 
 		return $result;
 	}
-
 
 	/**
 	 * @param string $filename

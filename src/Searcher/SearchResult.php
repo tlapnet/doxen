@@ -2,12 +2,10 @@
 
 namespace Tlapnet\Doxen\Searcher;
 
-
 use Tlapnet\Doxen\Tree\AbstractNode;
 
 class SearchResult
 {
-
 
 	/**
 	 * @var string
@@ -29,7 +27,6 @@ class SearchResult
 	 */
 	private $node;
 
-
 	/**
 	 * @return string
 	 */
@@ -38,15 +35,14 @@ class SearchResult
 		return $this->title;
 	}
 
-
 	/**
 	 * @param string $title
+	 * @return void
 	 */
 	public function setTitle($title)
 	{
 		$this->title = $title;
 	}
-
 
 	/**
 	 * @return int
@@ -56,15 +52,14 @@ class SearchResult
 		return $this->level;
 	}
 
-
 	/**
 	 * @param int $level
+	 * @return void
 	 */
 	public function setLevel($level)
 	{
-		$this->level = $level;
+		$this->level = intval($level);
 	}
-
 
 	/**
 	 * @return int
@@ -74,15 +69,14 @@ class SearchResult
 		return $this->count;
 	}
 
-
 	/**
 	 * @param int $count
+	 * @return void
 	 */
 	public function setCount($count)
 	{
-		$this->count = $count;
+		$this->count = intval($count);
 	}
-
 
 	/**
 	 * @return AbstractNode
@@ -92,14 +86,13 @@ class SearchResult
 		return $this->node;
 	}
 
-
 	/**
 	 * @param AbstractNode $node
+	 * @return void
 	 */
-	public function setNode($node)
+	public function setNode(AbstractNode $node)
 	{
 		$this->node = $node;
 	}
-
 
 }

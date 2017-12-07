@@ -2,16 +2,12 @@
 
 namespace Tlapnet\Doxen\Parsedown;
 
-
 use Nette\Application\UI\Control;
 
 class DoxenParsedown extends \Parsedown
 {
 
-
-	/**
-	 * @var Control
-	 */
+	/** @var Control */
 	private $control;
 
 	/**
@@ -19,9 +15,8 @@ class DoxenParsedown extends \Parsedown
 	 */
 	public function __construct(Control $control)
 	{
-		$this->control         = $control;
+		$this->control = $control;
 	}
-
 
 	/**
 	 * @param array $Excerpt
@@ -31,7 +26,7 @@ class DoxenParsedown extends \Parsedown
 	{
 		$link = parent::inlineLink($Excerpt);
 
-		if ($link === null) {
+		if ($link === NULL) {
 			return;
 		}
 
@@ -39,8 +34,7 @@ class DoxenParsedown extends \Parsedown
 		if (empty(parse_url($link['element']['attributes']['href'], PHP_URL_SCHEME))) {
 			if (isset($Excerpt['is_image'])) {
 				$link['element']['attributes']['href'] = $this->control->link('event!', ['type' => ParsedownDecorator::SIGNAL_PARSEDOWN_IMAGE, 'imageLink' => $link['element']['attributes']['href']]);
-			}
-			else {
+			} else {
 				$link['element']['attributes']['href'] = $this->control->link('this', ['page' => $link['element']['attributes']['href']]);
 			}
 
@@ -49,17 +43,15 @@ class DoxenParsedown extends \Parsedown
 		return $link;
 	}
 
-
 	/**
 	 * @param array $Excerpt
 	 * @return array
 	 */
 	protected function inlineImage($Excerpt)
 	{
-		$Excerpt['is_image'] = true;
+		$Excerpt['is_image'] = TRUE;
 
 		return parent::inlineImage($Excerpt);
 	}
-
 
 }

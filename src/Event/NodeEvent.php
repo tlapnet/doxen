@@ -1,29 +1,23 @@
 <?php
 
-namespace Tlapnet\Doxen\Component\Event;
-
+namespace Tlapnet\Doxen\Event;
 
 use Tlapnet\Doxen\Tree\AbstractNode;
 
-class NodeEvent extends AbstractEvent
+final class NodeEvent extends AbstractControlEvent
 {
 
-
-	/**
-	 * @var AbstractNode
-	 */
+	/** @var AbstractNode */
 	private $node;
-
 
 	/**
 	 * @param AbstractNode $node
 	 */
-	public function __construct($node)
+	public function __construct(AbstractNode $node)
 	{
 		$this->type = self::TYPE_NODE;
 		$this->node = $node;
 	}
-
 
 	/**
 	 * @return AbstractNode
@@ -32,6 +26,5 @@ class NodeEvent extends AbstractEvent
 	{
 		return $this->node;
 	}
-
 
 }

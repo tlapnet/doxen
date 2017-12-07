@@ -1,10 +1,11 @@
 <?php
 
-namespace Tlapnet\Doxen\DocumentationMiner;
+namespace Tlapnet\Doxen\Miner;
+
+use Tlapnet\Doxen\Tree\DocTree;
 
 interface IDocumentationMiner
 {
-
 
 	/**
 	 * @return DocTree

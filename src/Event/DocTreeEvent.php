@@ -1,29 +1,23 @@
 <?php
 
-namespace Tlapnet\Doxen\Component\Event;
-
+namespace Tlapnet\Doxen\Event;
 
 use Tlapnet\Doxen\Tree\DocTree;
 
-class DocTreeEvent extends AbstractEvent
+class DocTreeEvent extends AbstractControlEvent
 {
 
-
-	/**
-	 * @var DocTree
-	 */
+	/** @var DocTree */
 	private $docTree;
-
 
 	/**
 	 * @param DocTree $docTree
 	 */
 	public function __construct(DocTree $docTree)
 	{
-		$this->type    = self::TYPE_DOCTREE;
+		$this->type = self::TYPE_DOCTREE;
 		$this->docTree = $docTree;
 	}
-
 
 	/**
 	 * @return DocTree
@@ -32,6 +26,5 @@ class DocTreeEvent extends AbstractEvent
 	{
 		return $this->docTree;
 	}
-
 
 }

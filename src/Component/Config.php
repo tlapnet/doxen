@@ -2,18 +2,16 @@
 
 namespace Tlapnet\Doxen\Component;
 
-
-use Nette\Application\UI\ITemplate;
+use Nette\Templating\ITemplate;
 
 class Config
 {
 
+	/** @var bool */
+	private $showBreadcrumb = TRUE;
 
 	/** @var bool */
-	private $showBreadcrumb = true;
-
-	/** @var bool */
-	private $showMenu = true;
+	private $showMenu = TRUE;
 
 	/** @var string */
 	private $layoutTemplate = __DIR__ . '/template/layout.latte';
@@ -36,22 +34,6 @@ class Config
 	/** @var string */
 	private $cssStyleFile = __DIR__ . '/style/github.css';
 
-
-	/**
-	 * @param ITemplate $template
-	 */
-	public function setupTemplate(ITemplate $template)
-	{
-		$template->layoutTemplate     = $this->layoutTemplate;
-		$template->menuTemplate       = $this->menuTemplate;
-		$template->breadcrumbTemplate = $this->breadcrumbTemplate;
-		$template->searchTemplate     = $this->searchTemplate;
-		$template->showBreadcrumb     = $this->showBreadcrumb;
-		$template->showMenu           = $this->showMenu;
-		$template->cssStyleFile       = $this->cssStyleFile;
-	}
-
-
 	/**
 	 * @return bool
 	 */
@@ -60,15 +42,16 @@ class Config
 		return $this->showBreadcrumb;
 	}
 
-
 	/**
-	 * @param bool $showBreadcrumb
+	 * @param bool $show
+	 * @return self
 	 */
-	public function setShowBreadcrumb($showBreadcrumb)
+	public function setShowBreadcrumb($show = TRUE)
 	{
-		$this->showBreadcrumb = $showBreadcrumb;
-	}
+		$this->showBreadcrumb = boolval($show);
 
+		return $this;
+	}
 
 	/**
 	 * @return bool
@@ -78,15 +61,16 @@ class Config
 		return $this->showMenu;
 	}
 
-
 	/**
-	 * @param bool $showMenu
+	 * @param bool $show
+	 * @return self
 	 */
-	public function setShowMenu($showMenu)
+	public function setShowMenu($show = TRUE)
 	{
-		$this->showMenu = $showMenu;
-	}
+		$this->showMenu = boolval($show);
 
+		return $this;
+	}
 
 	/**
 	 * @return string
@@ -96,15 +80,16 @@ class Config
 		return $this->layoutTemplate;
 	}
 
-
 	/**
 	 * @param string $layoutTemplate
+	 * @return self
 	 */
 	public function setLayoutTemplate($layoutTemplate)
 	{
 		$this->layoutTemplate = $layoutTemplate;
-	}
 
+		return $this;
+	}
 
 	/**
 	 * @return string
@@ -114,15 +99,16 @@ class Config
 		return $this->docTemplate;
 	}
 
-
 	/**
 	 * @param string $docTemplate
+	 * @return self
 	 */
 	public function setDocTemplate($docTemplate)
 	{
 		$this->docTemplate = $docTemplate;
-	}
 
+		return $this;
+	}
 
 	/**
 	 * @return string
@@ -132,15 +118,16 @@ class Config
 		return $this->listTemplate;
 	}
 
-
 	/**
 	 * @param string $listTemplate
+	 * @return self
 	 */
 	public function setListTemplate($listTemplate)
 	{
 		$this->listTemplate = $listTemplate;
-	}
 
+		return $this;
+	}
 
 	/**
 	 * @return string
@@ -150,15 +137,16 @@ class Config
 		return $this->menuTemplate;
 	}
 
-
 	/**
 	 * @param string $menuTemplate
+	 * @return self
 	 */
 	public function setMenuTemplate($menuTemplate)
 	{
 		$this->menuTemplate = $menuTemplate;
-	}
 
+		return $this;
+	}
 
 	/**
 	 * @return string
@@ -168,15 +156,16 @@ class Config
 		return $this->breadcrumbTemplate;
 	}
 
-
 	/**
 	 * @param string $breadcrumbTemplate
+	 * @return self
 	 */
 	public function setBreadcrumbTemplate($breadcrumbTemplate)
 	{
 		$this->breadcrumbTemplate = $breadcrumbTemplate;
-	}
 
+		return $this;
+	}
 
 	/**
 	 * @return string
@@ -186,15 +175,16 @@ class Config
 		return $this->searchTemplate;
 	}
 
-
 	/**
 	 * @param string $searchTemplate
+	 * @return self
 	 */
 	public function setSearchTemplate($searchTemplate)
 	{
 		$this->searchTemplate = $searchTemplate;
-	}
 
+		return $this;
+	}
 
 	/**
 	 * @return string
@@ -204,12 +194,34 @@ class Config
 		return $this->cssStyleFile;
 	}
 
-
 	/**
 	 * @param string $cssStyleFile
+	 * @return self
 	 */
 	public function setCssStyleFile($cssStyleFile)
 	{
 		$this->cssStyleFile = $cssStyleFile;
+
+		return $this;
 	}
+
+	/**
+	 * TEMPLATE HELPERS ********************************************************
+	 */
+
+	/**
+	 * @param ITemplate $template
+	 * @return void
+	 */
+	public function setupTemplate(ITemplate $template)
+	{
+		$template->layoutTemplate = $this->layoutTemplate;
+		$template->menuTemplate = $this->menuTemplate;
+		$template->breadcrumbTemplate = $this->breadcrumbTemplate;
+		$template->searchTemplate = $this->searchTemplate;
+		$template->showBreadcrumb = $this->showBreadcrumb;
+		$template->showMenu = $this->showMenu;
+		$template->cssStyleFile = $this->cssStyleFile;
+	}
+
 }

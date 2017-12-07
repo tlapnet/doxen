@@ -2,12 +2,10 @@
 
 namespace Tlapnet\Doxen\Tree;
 
-
 use Nette\Utils\Strings;
 
 abstract class AbstractNode
 {
-
 
 	const PATH_SEPARATOR = '/';
 
@@ -15,42 +13,26 @@ abstract class AbstractNode
 	const  TYPE_NODE = 2;
 	const  TYPE_LEAF = 3;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $title;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $id;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $path;
 
-	/**
-	 * @var ParentNode
-	 */
+	/** @var ParentNode */
 	protected $parent;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	protected $level;
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	protected $metadata = [];
 
-
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	protected $type = self::TYPE_LEAF;
-
 
 	/**
 	 * @return int
@@ -60,24 +42,22 @@ abstract class AbstractNode
 		return $this->type;
 	}
 
-
 	/**
 	 * @return string
 	 */
-	function getTitle()
+	public function getTitle()
 	{
 		return $this->title;
 	}
 
-
 	/**
 	 * @param string $title
+	 * @return void
 	 */
 	public function setTitle($title)
 	{
 		$this->title = $title;
 	}
-
 
 	/**
 	 * @return string
@@ -87,15 +67,14 @@ abstract class AbstractNode
 		return $this->id;
 	}
 
-
 	/**
 	 * @param string $id
+	 * @return void
 	 */
 	public function setId($id)
 	{
 		$this->id = $id;
 	}
-
 
 	/**
 	 * @return AbstractNode
@@ -105,16 +84,16 @@ abstract class AbstractNode
 		return $this->parent;
 	}
 
-
 	/**
 	 * @param AbstractNode $parent
+	 * @return void
 	 */
 	public function setParent(AbstractNode $parent)
 	{
 		$this->parent = $parent;
-		$nodeId       = Strings::webalize($this->getTitle());
-		$parents      = $this->getParents();
-		$ids          = [$nodeId];
+		$nodeId = Strings::webalize($this->getTitle());
+		$parents = $this->getParents();
+		$ids = [$nodeId];
 
 		foreach ($parents as $parent) {
 			$ids[] = $parent->getId();
@@ -127,15 +106,13 @@ abstract class AbstractNode
 		$parent->attached($this);
 	}
 
-
 	/**
 	 * @return bool
 	 */
 	public function hasNodes()
 	{
-		return false;
+		return FALSE;
 	}
-
 
 	/**
 	 * @return int
@@ -145,15 +122,14 @@ abstract class AbstractNode
 		return $this->level;
 	}
 
-
 	/**
 	 * @param int $level
+	 * @return void
 	 */
-	public function setLevel($level)
+	protected function setLevel($level)
 	{
 		$this->level = $level;
 	}
-
 
 	/**
 	 * @return string
@@ -163,15 +139,14 @@ abstract class AbstractNode
 		return $this->path;
 	}
 
-
 	/**
 	 * @param string $path
+	 * @return void
 	 */
-	public function setPath($path)
+	protected function setPath($path)
 	{
 		$this->path = $path;
 	}
-
 
 	/**
 	 * @return array
@@ -181,37 +156,52 @@ abstract class AbstractNode
 		return $this->metadata;
 	}
 
-
 	/**
 	 * @param array $metadata
+	 * @return void
 	 */
 	public function setMetadata(array $metadata)
 	{
 		$this->metadata = $metadata;
 	}
 
+	/**
+	 * ABSTRACT ****************************************************************
+	 */
 
 	/**
 	 * @return string
 	 */
-	abstract function getContent();
+	abstract public function getContent();
 
+	/**
+	 * NODE MODEL **************************************************************
+	 */
 
+	/**
+	 * @param AbstractNode $node
+	 * @return void
+	 */
 	protected function attached(AbstractNode $node)
 	{
 	}
 
+	/**
+	 * LINKED-LIST HELPERS *****************************************************
+	 */
 
 	/**
 	 * @return AbstractNode[]
 	 */
 	public function getParents()
 	{
-		$tmp     = $this;
 		$parents = [];
-		while (($parent = $tmp->getParent()) !== null) {
+		$tmp = $this;
+
+		// Iterate over all parents
+		while (($parent = $tmp->getParent()) !== NULL) {
 			$parents[] = $parent;
-			$tmp       = $parent;
+			$tmp = $parent;
 		}
 
 		return $parents;
