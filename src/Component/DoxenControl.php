@@ -3,6 +3,7 @@
 namespace Tlapnet\Doxen\Component;
 
 use Nette\Application\UI\Control;
+use Tlapnet\Doxen\Event\AbstractControlEvent;
 use Tlapnet\Doxen\Event\AbstractEvent;
 use Tlapnet\Doxen\Event\DocTreeEvent;
 use Tlapnet\Doxen\Event\NodeEvent;
@@ -97,7 +98,10 @@ class DoxenControl extends Control
 	 */
 	public function decorate(AbstractEvent $event)
 	{
-		$event->setControl($this);
+		if ($event instanceof AbstractControlEvent) {
+			$event->setControl($this);
+		}
+
 		foreach ($this->decorators as $decorator) {
 			$decorator->decorate($event);
 		}
