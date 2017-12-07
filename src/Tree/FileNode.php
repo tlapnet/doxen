@@ -2,6 +2,8 @@
 
 namespace Tlapnet\Doxen\Tree;
 
+use Tlapnet\Doxen\Exception\Logic\InvalidFileException;
+
 class FileNode extends TextNode
 {
 
@@ -13,7 +15,12 @@ class FileNode extends TextNode
 	 */
 	public function __construct($filename)
 	{
+		parent::__construct();
 		$this->filename = $filename;
+
+		if (!is_file($filename)) {
+			throw new InvalidFileException(sprintf('File "%s" is not file', $filename));
+		}
 	}
 
 	/**
