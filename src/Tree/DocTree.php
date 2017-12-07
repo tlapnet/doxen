@@ -3,8 +3,9 @@
 namespace Tlapnet\Doxen\Tree;
 
 use ArrayIterator;
+use IteratorAggregate;
 
-class DocTree implements \IteratorAggregate
+class DocTree implements IteratorAggregate
 {
 
 	/** @var AbstractNode */

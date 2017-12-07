@@ -2,7 +2,7 @@
 
 namespace Tlapnet\Doxen\Component;
 
-use Nette\Templating\ITemplate;
+use Nette\Bridges\ApplicationLatte\Template;
 
 class Config
 {
@@ -210,10 +210,10 @@ class Config
 	 */
 
 	/**
-	 * @param ITemplate $template
+	 * @param Template $template
 	 * @return void
 	 */
-	public function setupTemplate(ITemplate $template)
+	public function setupTemplate(Template $template)
 	{
 		$template->layoutTemplate = $this->layoutTemplate;
 		$template->menuTemplate = $this->menuTemplate;
