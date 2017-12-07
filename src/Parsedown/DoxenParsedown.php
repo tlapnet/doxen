@@ -27,7 +27,7 @@ class DoxenParsedown extends \Parsedown
 		$link = parent::inlineLink($Excerpt);
 
 		if ($link === NULL) {
-			return;
+			return NULL;
 		}
 
 		// change relative link to control signal
