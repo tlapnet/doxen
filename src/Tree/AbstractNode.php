@@ -157,12 +157,35 @@ abstract class AbstractNode
 	}
 
 	/**
+	 * @param string $key
+	 * @return mixed
+	 */
+	public function getMetadataPart($key)
+	{
+		if (!isset($this->metadata[$key])) {
+			return NULL;
+		}
+
+		return $this->metadata[$key];
+	}
+
+	/**
 	 * @param array $metadata
 	 * @return void
 	 */
 	public function setMetadata(array $metadata)
 	{
 		$this->metadata = $metadata;
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 * @return void
+	 */
+	public function setMetadataPart($key, $value)
+	{
+		$this->metadata[$key] = $value;
 	}
 
 	/**
