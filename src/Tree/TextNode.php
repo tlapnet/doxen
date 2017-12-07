@@ -12,6 +12,14 @@ class TextNode extends AbstractNode
 	protected $rawContent;
 
 	/**
+	 * @param string $content
+	 */
+	public function __construct($content = NULL)
+	{
+		$this->rawContent = $this->content = $content;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getContent()
