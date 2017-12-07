@@ -9,10 +9,10 @@ use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\Utils\Image;
 use Nette\Utils\Strings;
-use Tlapnet\Doxen\Component\Event\AbstractEvent;
-use Tlapnet\Doxen\Component\Event\NodeEvent;
-use Tlapnet\Doxen\Component\Event\SignalEvent;
 use Tlapnet\Doxen\Component\IDecorator;
+use Tlapnet\Doxen\Event\AbstractEvent;
+use Tlapnet\Doxen\Event\NodeEvent;
+use Tlapnet\Doxen\Event\SignalEvent;
 use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\FileNode;
 

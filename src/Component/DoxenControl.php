@@ -3,10 +3,10 @@
 namespace Tlapnet\Doxen\Component;
 
 use Nette\Application\UI\Control;
-use Tlapnet\Doxen\Component\Event\AbstractEvent;
-use Tlapnet\Doxen\Component\Event\DocTreeEvent;
-use Tlapnet\Doxen\Component\Event\NodeEvent;
-use Tlapnet\Doxen\Component\Event\SignalEvent;
+use Tlapnet\Doxen\Event\AbstractEvent;
+use Tlapnet\Doxen\Event\DocTreeEvent;
+use Tlapnet\Doxen\Event\NodeEvent;
+use Tlapnet\Doxen\Event\SignalEvent;
 use Tlapnet\Doxen\Searcher\ISearcher;
 use Tlapnet\Doxen\Searcher\SearchResult;
 use Tlapnet\Doxen\Tree\AbstractNode;

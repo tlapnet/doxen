@@ -2,7 +2,7 @@
 
 namespace Tlapnet\Doxen\Component;
 
-use Tlapnet\Doxen\Component\Event\AbstractEvent;
+use Tlapnet\Doxen\Event\AbstractEvent;
 
 interface IDecorator
 {
