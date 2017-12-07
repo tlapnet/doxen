@@ -2,6 +2,7 @@
 
 namespace Tlapnet\Doxen\Miner;
 
+use Nette\InvalidStateException;
 use Nette\Utils\Finder;
 use Tlapnet\Doxen\Tree\DocTree;
 use Tlapnet\Doxen\Tree\FileNode;
@@ -40,7 +41,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	 */
 	public function createTree()
 	{
-		if (is_null($this->docTree)) {
+		if (!$this->docTree) {
 			$docFiles = $this->loadDocFiles($this->config['doc']);
 
 			$this->docTree = $this->createDocTree($docFiles);
@@ -163,8 +164,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 			if (is_string($key)) { // key is menu title
 				$result[$key] = $this->loadDocFiles($value);
 			} else { // key is path to folder
-				$found = $this->findFilesAndFolders($value, TRUE);
-				$result = array_merge($result, is_array($found) ? $found : [$found]);
+				$result = array_merge($result, $this->findFilesAndFolders($value, TRUE));
 			}
 		}
 
@@ -174,7 +174,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	/**
 	 * @param string $docPath
 	 * @param bool $isRoot
-	 * @return string | array
+	 * @return array
 	 */
 	private function findFilesAndFolders($docPath, $isRoot = FALSE)
 	{
@@ -205,10 +205,12 @@ final class FileDocumentationMiner implements IDocumentationMiner
 
 			// in case only one file and no folder was found in directory, return file directly
 			if (!$hasSubdoc && count($files) === 1 && !$isRoot) {
-				$result = array_shift($result);
+				$result = [array_shift($result)];
 			}
 		} elseif (is_file($docPath)) {
 			$result[$this->normalizePathname(pathinfo($docPath, PATHINFO_FILENAME))] = $docPath;
+		} else {
+			throw new InvalidStateException('Invalid path given');
 		}
 
 		return $result;

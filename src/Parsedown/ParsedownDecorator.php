@@ -15,6 +15,7 @@ use Tlapnet\Doxen\Event\NodeEvent;
 use Tlapnet\Doxen\Event\SignalEvent;
 use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\FileNode;
+use Tlapnet\Doxen\Tree\TextNode;
 
 class ParsedownDecorator implements IDecorator
 {
@@ -40,13 +41,20 @@ class ParsedownDecorator implements IDecorator
 	 */
 	private function decorateNode(NodeEvent $event)
 	{
-		if ($event->getNode()->getType() !== AbstractNode::TYPE_LEAF) {
+		/** @var TextNode $node */
+		$node = $event->getNode();
+
+		if ($node->getType() !== AbstractNode::TYPE_LEAF) {
+			return;
+		}
+
+		if (!($node instanceof TextNode)) {
 			return;
 		}
 
 		$parsedown = new DoxenParsedown($event->getControl());
-		$content = $parsedown->text($event->getNode()->getContent());
-		$event->getNode()->setContent($content);
+		$content = $parsedown->text($node->getContent());
+		$node->setContent($content);
 	}
 
 	/**
@@ -73,7 +81,11 @@ class ParsedownDecorator implements IDecorator
 		$imageLink = $control->getParameter('imageLink', FALSE);
 
 		// prepare image
-		if ($imageNode && $imageNode->getType() === AbstractNode::TYPE_LEAF && $imageLink) {
+		if ($imageNode
+			&& ($imageNode instanceof FileNode)
+			&& $imageNode->getType() === AbstractNode::TYPE_LEAF
+			&& $imageLink
+		) {
 			$image = $this->getImage($imageNode, $imageLink);
 		} else {
 			$image = $this->getErrorImage();
