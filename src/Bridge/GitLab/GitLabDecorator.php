@@ -30,9 +30,7 @@ class GitLabDecorator extends AbstractNodeListener
 			if (!$git || !$global)
 				return NULL;
 
-			$projectName = end(explode(':', $git['originUrl']));
-			$projectName = substr($projectName, 0, -4);
-			$link = $global['git']['url'] . '/' . $projectName . '/edit/' . $git['currentBranch'] . '/' . $git['fileName'];
+			$link = $global['git']['url'] . '/' . $git['projectName'] . '/edit/' . $git['currentBranch'] . '/' . $git['fileName'];
 
 			$template->link = $link;
 			$template->setFile(__DIR__ . '/templates/gitlab.latte');
