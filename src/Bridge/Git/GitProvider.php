@@ -30,7 +30,7 @@ class GitProvider extends AbstractNodeListener
 		$topLevel = self::git($node, 'rev-parse --show-toplevel');
 		$gitFileName = str_replace($topLevel . '/', NULL, $node->getFilename());
 		$currentBranch = self::git($node, 'rev-parse --abbrev-ref HEAD');
-		$originUrl = self::git($node, 'remote get-url origin');
+		$originUrl = self::git($node, 'config --get remote.origin.url');
 		$nameParts = explode(':', $originUrl);
 		$projectName = array_pop($nameParts);
 		$projectName = substr($projectName, 0, -4);
