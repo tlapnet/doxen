@@ -1,6 +1,6 @@
 <?php
 
-namespace Tlapnet\Doxen\Parsedown;
+namespace Tlapnet\Doxen\Bridge\Parsedown;
 
 use Exception;
 use InvalidArgumentException;
