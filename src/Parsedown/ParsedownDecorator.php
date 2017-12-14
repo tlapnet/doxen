@@ -5,18 +5,20 @@ namespace Tlapnet\Doxen\Parsedown;
 use Exception;
 use InvalidArgumentException;
 use Nette\Application\Responses\CallbackResponse;
+use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\Utils\Image;
 use Nette\Utils\Strings;
 use Tlapnet\Doxen\Component\IListener;
-use Tlapnet\Doxen\Component\WidgetManager;
 use Tlapnet\Doxen\Event\AbstractEvent;
 use Tlapnet\Doxen\Event\NodeEvent;
 use Tlapnet\Doxen\Event\SignalEvent;
 use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\FileNode;
 use Tlapnet\Doxen\Tree\TextNode;
+use Tlapnet\Doxen\Widget\WidgetManager;
+use Tlapnet\Doxen\Widget\Widgets;
 
 class ParsedownDecorator implements IListener
 {
@@ -56,10 +58,6 @@ class ParsedownDecorator implements IListener
 		$parsedown = new DoxenParsedown($event->getControl());
 		$content = $parsedown->text($node->getContent());
 		$node->setContent($content);
-
-
-		$wm = new WidgetManager($node);
-		$wm->get(WidgetManager::PAGE_X)->
 	}
 
 	/**

@@ -3,6 +3,7 @@
 namespace Tlapnet\Doxen\Component;
 
 use Nette\Application\UI\Control;
+use Nette\Application\UI\Presenter;
 use Tlapnet\Doxen\Event\AbstractControlEvent;
 use Tlapnet\Doxen\Event\AbstractEvent;
 use Tlapnet\Doxen\Event\DocTreeEvent;
@@ -13,6 +14,7 @@ use Tlapnet\Doxen\Searcher\SearchResult;
 use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\DocTree;
 use Tlapnet\Doxen\Tree\TextNode;
+use Tlapnet\Doxen\Widget\WidgetRenderer;
 
 class DoxenControl extends Control
 {
@@ -55,7 +57,19 @@ class DoxenControl extends Control
 		parent::__construct();
 		$this->tree = $tree;
 		$this->config = $config ?: new Config();
-		$this->widgetRenderer = new WidgetRenderer();
+	}
+
+	/**
+	 * @param object $presenter
+	 * @return void
+	 */
+	protected function attached($presenter)
+	{
+		parent::attached($presenter);
+
+		if ($presenter instanceof Presenter) {
+			$this->widgetRenderer = new WidgetRenderer($this->createTemplate());
+		}
 	}
 
 	/**
