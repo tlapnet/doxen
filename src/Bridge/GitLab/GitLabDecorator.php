@@ -17,20 +17,22 @@ class GitLabDecorator extends AbstractNodeListener
 	 */
 	public function decorateNode(NodeEvent $event)
 	{
-		if (!($node = $this->getFileNode($event))) return;
+		if (!($node = $this->getFileNode($event)))
+			return;
 
-		if (!file_exists($node->getFilename())) return;
+		if (!file_exists($node->getFilename()))
+			return;
 
 		$wm = new WidgetManager($node);
 		$wm->get(Widgets::PAGE_MENU)->add('gitlab', function (Template $template) use ($node) {
 			$git = $node->getMetadataPart('git');
-			if (!$git)
+			$global = $node->getMetadataPart('global');
+			if (!$git || !$global)
 				return NULL;
 
-			$gitLabUrl = 'https://gitlab.ispalliance.cz/';
 			$projectName = end(explode(':', $git['originUrl']));
 			$projectName = substr($projectName, 0, -4);
-			$link = $gitLabUrl . $projectName . '/edit/' . $git['currentBranch'] . '/' . $git['fileName'];
+			$link = $global['git']['url'] . '/' . $projectName . '/edit/' . $git['currentBranch'] . '/' . $git['fileName'];
 
 			$template->link = $link;
 			$template->setFile(__DIR__ . '/templates/gitlab.latte');
