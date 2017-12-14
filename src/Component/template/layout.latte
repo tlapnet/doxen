@@ -1,5 +1,5 @@
 <style type="text/css">{$cssStyleFile|contents|noescape}</style>
-<div style="max-width: {if $showMenu}1600px{else}1200px{/if}" class="container pull-left">
+<div style="max-width: {if $showMenu}1600px{else}1200px{/if}" class="container pull-left doxen">
 	<div class="row">
 		<div n:class="$searcher ? col-md-9 : col-md-12">
 			{include $breadcrumbTemplate}
@@ -16,7 +16,7 @@
 			</form>
 		</div>
 	</div>
-	<div class="row">
+	<div class="row doxen-main">
 		<div n:if="$showMenu" class="col-md-3">
 			{include $menuTemplate}
 		</div>

@@ -700,53 +700,77 @@
 }
 
 /**
- * TOC *******************************************
+ * DOXEN *****************************************
  */
 
-.toc {
+.doxen .doxen-main {
+  font-size: 1em;
+}
+
+.doxen .doxen-main .markdown-body {
+  clear: both;
+}
+
+/**
+ * WIDGET: PAGE MENU *****************************
+ */
+
+.doxen .widget-page-menu {
   background-color: #f5f5f5;
   border: 1px solid #e3e3e3;
   border-radius: 4px;
   padding: 10px 0;
 }
 
-.toc .toc-list {
+
+/**
+ * WIDGET: TOC ***********************************
+ */
+
+.doxen .widget-page-toc {
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+  padding: 10px 0;
+}
+
+.doxen .widget-page-toc .toc-list {
   margin-left: 30px;
 }
 
-.toc .toc-list ul {
+.doxen .widget-page-toc .toc-list ul {
   margin: 0;
   padding: 0;
 }
-.toc .toc-list ul li {
+.doxen .widget-page-toc .toc-list ul li {
   margin: 0;
   padding: 0;
   list-style-type: square;
 }
 
-.toc .headline {
+.doxen .widget-page-toc .headline {
   font-size: 15px;
 }
 
-.toc .headline.level-h1 {
+.doxen .widget-page-toc .headline.level-h1 {
 }
 
-.toc .headline.level-h2 {
+.doxen .widget-page-toc .headline.level-h2 {
   margin-left: 10px;
 }
 
-.toc .headline.level-h3 {
+.doxen .widget-page-toc .headline.level-h3 {
   margin-left: 20px;
 }
 
-.toc .headline.level-h4 {
+.doxen .widget-page-toc .headline.level-h4 {
   margin-left: 30px;
 }
 
-.toc .headline.level-h5 {
+.doxen .widget-page-toc .headline.level-h5 {
   margin-left: 40px;
 }
 
-.toc .headline.level-h6 {
+.doxen .widget-page-toc .headline.level-h6 {
   margin-left: 50px;
 }
