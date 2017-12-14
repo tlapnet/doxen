@@ -1,6 +1,6 @@
 <?php
 
-namespace Tlapnet\Doxen\Component;
+namespace Tlapnet\Doxen\Listener;
 
 use Tlapnet\Doxen\Event\AbstractEvent;
 

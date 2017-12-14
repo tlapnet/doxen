@@ -32,7 +32,7 @@ class Config
 	private $searchTemplate = __DIR__ . '/template/search.latte';
 
 	/** @var string */
-	private $cssStyleFile = __DIR__ . '/style/github.css';
+	private $cssStyleFile = __DIR__ . '/style/doxen.css';
 
 	/**
 	 * @return bool

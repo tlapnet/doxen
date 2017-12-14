@@ -9,15 +9,15 @@ use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\Utils\Image;
 use Nette\Utils\Strings;
-use Tlapnet\Doxen\Component\IListener;
 use Tlapnet\Doxen\Event\AbstractEvent;
 use Tlapnet\Doxen\Event\NodeEvent;
 use Tlapnet\Doxen\Event\SignalEvent;
+use Tlapnet\Doxen\Listener\IListener;
 use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\FileNode;
 use Tlapnet\Doxen\Tree\TextNode;
 
-class ParsedownDecorator implements IListener
+class ContentDecorator implements IListener
 {
 
 	const SIGNAL_PARSEDOWN_IMAGE = 'parsedown2image';

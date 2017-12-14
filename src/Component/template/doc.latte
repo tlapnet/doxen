@@ -2,6 +2,9 @@
 {block doxenContent}
 
 <div style="font-size: 1em" class="markdown-body">
+	<div class="toc">
+        {$_widgetRenderer->render($doc, 'page_toc')}
+    </div>
 	<div class="menu">
         {$_widgetRenderer->render($doc, 'page_menu')}
     </div>

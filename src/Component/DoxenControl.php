@@ -10,6 +10,7 @@ use Tlapnet\Doxen\Event\ConfigEvent;
 use Tlapnet\Doxen\Event\DocTreeEvent;
 use Tlapnet\Doxen\Event\NodeEvent;
 use Tlapnet\Doxen\Event\SignalEvent;
+use Tlapnet\Doxen\Listener\IListener;
 use Tlapnet\Doxen\Searcher\ISearcher;
 use Tlapnet\Doxen\Searcher\SearchResult;
 use Tlapnet\Doxen\Tree\AbstractNode;
