@@ -6,6 +6,7 @@ use Nette\Application\UI\Control;
 use Nette\Application\UI\Presenter;
 use Tlapnet\Doxen\Event\AbstractControlEvent;
 use Tlapnet\Doxen\Event\AbstractEvent;
+use Tlapnet\Doxen\Event\ConfigEvent;
 use Tlapnet\Doxen\Event\DocTreeEvent;
 use Tlapnet\Doxen\Event\NodeEvent;
 use Tlapnet\Doxen\Event\SignalEvent;
@@ -64,6 +65,7 @@ class DoxenControl extends Control
 
 		if ($presenter instanceof Presenter) {
 			$this->widgetRenderer = new WidgetRenderer($this->createTemplate());
+			$this->emitt(new ConfigEvent($this->config));
 		}
 	}
 
