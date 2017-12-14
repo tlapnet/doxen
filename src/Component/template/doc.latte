@@ -2,5 +2,10 @@
 {block doxenContent}
 
 <div style="font-size: 1em" class="markdown-body">
-	{$doc->getContent()|noescape}
+	<div class="menu">
+        {$_widgetRenderer->render($doc, 'page_menu')}
+    </div>
+    <div class="content">
+        {$doc->getContent()|noescape}
+    </div>
 </div>

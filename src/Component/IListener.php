@@ -4,13 +4,13 @@ namespace Tlapnet\Doxen\Component;
 
 use Tlapnet\Doxen\Event\AbstractEvent;
 
-interface IDecorator
+interface IListener
 {
 
 	/**
 	 * @param AbstractEvent $event
 	 * @return void
 	 */
-	public function decorate(AbstractEvent $event);
+	public function listen(AbstractEvent $event);
 
 }

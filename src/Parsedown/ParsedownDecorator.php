@@ -9,7 +9,8 @@ use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\Utils\Image;
 use Nette\Utils\Strings;
-use Tlapnet\Doxen\Component\IDecorator;
+use Tlapnet\Doxen\Component\IListener;
+use Tlapnet\Doxen\Component\WidgetManager;
 use Tlapnet\Doxen\Event\AbstractEvent;
 use Tlapnet\Doxen\Event\NodeEvent;
 use Tlapnet\Doxen\Event\SignalEvent;
@@ -17,7 +18,7 @@ use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\FileNode;
 use Tlapnet\Doxen\Tree\TextNode;
 
-class ParsedownDecorator implements IDecorator
+class ParsedownDecorator implements IListener
 {
 
 	const SIGNAL_PARSEDOWN_IMAGE = 'parsedown2image';
@@ -26,7 +27,7 @@ class ParsedownDecorator implements IDecorator
 	 * @param AbstractEvent $event
 	 * @return void
 	 */
-	public function decorate(AbstractEvent $event)
+	public function listen(AbstractEvent $event)
 	{
 		if ($event->getType() === AbstractEvent::TYPE_NODE) {
 			$this->decorateNode($event);
@@ -55,6 +56,10 @@ class ParsedownDecorator implements IDecorator
 		$parsedown = new DoxenParsedown($event->getControl());
 		$content = $parsedown->text($node->getContent());
 		$node->setContent($content);
+
+
+		$wm = new WidgetManager($node);
+		$wm->get(WidgetManager::PAGE_X)->
 	}
 
 	/**
