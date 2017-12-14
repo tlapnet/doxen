@@ -44,9 +44,9 @@ final class WidgetRenderer
 			$template = clone $this->template;
 			$output = $partRenderer($template);
 
-			if (!$output) {
+			if ($output instanceof Template) {
 				$template->render();
-			} else {
+			} elseif ($output !== NULL) {
 				echo $output;
 			}
 		}
