@@ -5,7 +5,6 @@ namespace Tlapnet\Doxen\Parsedown;
 use Exception;
 use InvalidArgumentException;
 use Nette\Application\Responses\CallbackResponse;
-use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\Utils\Image;
@@ -17,8 +16,6 @@ use Tlapnet\Doxen\Event\SignalEvent;
 use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\FileNode;
 use Tlapnet\Doxen\Tree\TextNode;
-use Tlapnet\Doxen\Widget\WidgetManager;
-use Tlapnet\Doxen\Widget\Widgets;
 
 class ParsedownDecorator implements IListener
 {

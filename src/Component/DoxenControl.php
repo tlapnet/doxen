@@ -28,12 +28,8 @@ class DoxenControl extends Control
 	/** @var Config */
 	private $config;
 
-	// listeners =============
-
 	/** @var IListener[] */
 	private $listeners = [];
-
-	// search ================
 
 	/** @var ISearcher */
 	private $searcher;
@@ -43,7 +39,6 @@ class DoxenControl extends Control
 
 	/** @var string */
 	private $searchQuery = NULL;
-	// widgets ===============
 
 	/** @var WidgetRenderer */
 	private $widgetRenderer;
@@ -146,6 +141,11 @@ class DoxenControl extends Control
 	 * RENDERERS ***************************************************************
 	 */
 
+	/**
+	 * Called before template is gonna be rendered
+	 *
+	 * @return void
+	 */
 	protected function beforeRender()
 	{
 		$this->template->_widgetRenderer = $this->widgetRenderer;

@@ -2,24 +2,11 @@
 
 namespace Tlapnet\Doxen\Widget;
 
-use Tlapnet\Doxen\Tree\AbstractNode;
-
 class WidgetSection
 {
 
-	/** @var AbstractNode */
-	private $node;
-
 	/** @var array */
 	private $parts = [];
-
-	/**
-	 * @param AbstractNode $node
-	 */
-	public function __construct(AbstractNode $node)
-	{
-		$this->node = $node;
-	}
 
 	/**
 	 * @return array

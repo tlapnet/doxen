@@ -31,7 +31,7 @@ class WidgetManager
 
 		// Init new widget section
 		if (!isset($widgets[$section])) {
-			$widgets[$section] = new WidgetSection($this->node);
+			$widgets[$section] = new WidgetSection();
 		}
 
 		// Update widgets
