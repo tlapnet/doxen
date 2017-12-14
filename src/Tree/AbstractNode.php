@@ -180,7 +180,7 @@ abstract class AbstractNode
 
 	/**
 	 * @param string $key
-	 * @param string $value
+	 * @param mixed $value
 	 * @return void
 	 */
 	public function setMetadataPart($key, $value)

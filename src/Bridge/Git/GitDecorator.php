@@ -6,6 +6,7 @@ use DateTime;
 use Nette\Bridges\ApplicationLatte\Template;
 use Tlapnet\Doxen\Event\NodeEvent;
 use Tlapnet\Doxen\Listener\AbstractNodeListener;
+use Tlapnet\Doxen\Tree\FileNode;
 use Tlapnet\Doxen\Widget\WidgetManager;
 use Tlapnet\Doxen\Widget\Widgets;
 
