@@ -12,7 +12,7 @@ abstract class AbstractNodeListener extends AbstractTypeListener
 {
 
 	/**
-	 * @param string $accept
+	 * AbstractNodeListener constructor
 	 */
 	public function __construct()
 	{
@@ -21,6 +21,7 @@ abstract class AbstractNodeListener extends AbstractTypeListener
 
 	/**
 	 * @param AbstractEvent|NodeEvent $event
+	 * @return void
 	 */
 	public function decorate(AbstractEvent $event)
 	{
@@ -31,7 +32,7 @@ abstract class AbstractNodeListener extends AbstractTypeListener
 	 * @param NodeEvent $event
 	 * @return void
 	 */
-	abstract function decorateNode(NodeEvent $event);
+	abstract public function decorateNode(NodeEvent $event);
 
 	/**
 	 * @param NodeEvent $event

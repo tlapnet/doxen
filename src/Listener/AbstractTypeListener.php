@@ -33,6 +33,6 @@ abstract class AbstractTypeListener implements IListener
 	 * @param AbstractEvent $event
 	 * @return void
 	 */
-	abstract function decorate(AbstractEvent $event);
+	abstract public function decorate(AbstractEvent $event);
 
 }
