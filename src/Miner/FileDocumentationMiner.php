@@ -164,7 +164,8 @@ final class FileDocumentationMiner implements IDocumentationMiner
 			if (is_string($key)) { // key is menu title
 				$result[$key] = $this->loadDocFiles($value);
 			} else { // key is path to folder
-				$result = array_merge($result, $this->findFilesAndFolders($value, TRUE));
+				$found = $this->findFilesAndFolders($value, TRUE);
+				$result = array_merge($result, is_array($found) ? $found : [$found]);
 			}
 		}
 
@@ -205,7 +206,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 
 			// in case only one file and no folder was found in directory, return file directly
 			if (!$hasSubdoc && count($files) === 1 && !$isRoot) {
-				$result = [array_shift($result)];
+				$result = array_shift($result);
 			}
 		} elseif (is_file($docPath)) {
 			$result[$this->normalizePathname(pathinfo($docPath, PATHINFO_FILENAME))] = $docPath;
