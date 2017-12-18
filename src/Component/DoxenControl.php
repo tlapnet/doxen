@@ -67,6 +67,7 @@ class DoxenControl extends Control
 		if ($presenter instanceof Presenter) {
 			$this->widgetRenderer = new WidgetRenderer($this->createTemplate());
 			$this->emitt(new ConfigEvent($this->config));
+			$this->emitt(new DocTreeEvent($this->tree));
 		}
 	}
 
@@ -173,7 +174,6 @@ class DoxenControl extends Control
 	public function render()
 	{
 		$this->beforeRender();
-		$this->emitt(new DocTreeEvent($this->tree));
 
 		if ($this->searchResult === NULL) {
 			$this->renderDoc();
