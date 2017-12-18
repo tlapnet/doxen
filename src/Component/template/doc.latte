@@ -2,16 +2,18 @@
 {block doxenContent}
 <div class="row">
     <div class="col-md-8">
-        <div class="widget-page-toc">
-            {$_widgetRenderer->render($doc, 'page_toc')}
+		{capture $page_toc}{$_widgetRenderer->render($doc, 'page_toc')}{/capture}
+        <div n:if="$page_toc" class="widget-page-toc">
+            {$page_toc}
         </div>
     </div>
     <div class="col-md-4">
         {*<a class="btn btn-default pull-right" role="button" data-toggle="collapse" href="#widget-page-menu" aria-expanded="false" aria-controls="collapseExample">*}
             {*<i class="icon-arrow-down"></i>*}
         {*</a>*}
-        <div class="widget-page-menu" id="widget-page-menu">
-            {$_widgetRenderer->render($doc, 'page_menu')}
+		{capture $page_menu}{$_widgetRenderer->render($doc, 'page_menu')}{/capture}
+        <div n:if="$page_menu" class="widget-page-menu" id="widget-page-menu">
+            {$page_menu}
         </div>
     </div>
 </div>
