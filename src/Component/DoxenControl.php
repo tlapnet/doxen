@@ -66,8 +66,8 @@ class DoxenControl extends Control
 
 		if ($presenter instanceof Presenter) {
 			$this->widgetRenderer = new WidgetRenderer($this->createTemplate());
-			$this->emitt(new ConfigEvent($this->config));
-			$this->emitt(new DocTreeEvent($this->tree));
+			$this->emit(new ConfigEvent($this->config));
+			$this->emit(new DocTreeEvent($this->tree));
 		}
 	}
 
@@ -109,7 +109,7 @@ class DoxenControl extends Control
 	public function handleEvent($type)
 	{
 		if (!empty($type)) {
-			$this->emitt(new SignalEvent($this->tree, $type));
+			$this->emit(new SignalEvent($this->tree, $type));
 		}
 	}
 
@@ -128,7 +128,7 @@ class DoxenControl extends Control
 	 * @param AbstractEvent $event
 	 * @return AbstractEvent
 	 */
-	public function emitt(AbstractEvent $event)
+	public function emit(AbstractEvent $event)
 	{
 		if ($event instanceof AbstractControlEvent) {
 			$event->setControl($this);
@@ -200,7 +200,7 @@ class DoxenControl extends Control
 			$node = $this->tree->getNode($this->page);
 
 			if ($node) {
-				$this->emitt(new NodeEvent($node));
+				$this->emit(new NodeEvent($node));
 
 				// check if selected page contains documentation content or list of another documentations
 				if ($node->getType() === AbstractNode::TYPE_NODE) {
@@ -225,7 +225,7 @@ class DoxenControl extends Control
 	private function renderHomepage()
 	{
 		$homepageNode = $this->tree->getHomepage();
-		$this->emitt(new NodeEvent($homepageNode));
+		$this->emit(new NodeEvent($homepageNode));
 
 //		another way how to deal with homepage breadcrumb
 //		$template->breadcrumb =  $homepageNode->getPath() ? $this->docTree->getBreadcrumb($homepageNode->getPath()) : [$homepageNode];
