@@ -33,7 +33,7 @@ class ParentNode extends AbstractNode
 	}
 
 	/**
-	 * @param int $nodeId
+	 * @param string $nodeId
 	 * @return bool
 	 */
 	public function hasNode($nodeId)
@@ -49,6 +49,22 @@ class ParentNode extends AbstractNode
 	{
 		$node->setParent($this);
 		$this->nodes[$node->getId()] = $node;
+	}
+
+
+	/**
+	 * @param AbstractNode $node
+	 */
+	public function removeNode($node)
+	{
+		if ($this->getParent()) {
+			$this->getParent()->removeNode($node);
+		}
+
+		$nodeId = $node->getId();
+		if ($this->hasNode($nodeId)) {
+			unset($this->nodes[$nodeId]);
+		}
 	}
 
 	/**

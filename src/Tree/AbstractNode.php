@@ -230,4 +230,15 @@ abstract class AbstractNode
 		return $parents;
 	}
 
+
+	/**
+	 * remove node from tree
+	 */
+	public function remove()
+	{
+		if ($this->getParent()) {
+			$this->getParent()->removeNode($this);
+		}
+	}
+
 }

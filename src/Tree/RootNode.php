@@ -26,6 +26,15 @@ class RootNode extends ParentNode
 		return array_key_exists($path, $this->paths) ? $this->paths[$path] : NULL;
 	}
 
+
+	/**
+	 * @param AbstractNode $node
+	 */
+	public function removeNode($node)
+	{
+		unset($this->paths[$node->getPath()]);
+	}
+
 	/**
 	 * @param AbstractNode $node
 	 * @return void
