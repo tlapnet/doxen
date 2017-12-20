@@ -55,6 +55,7 @@ class ParentNode extends AbstractNode
 
 	/**
 	 * @param AbstractNode $node
+	 * @return void
 	 */
 	public function removeNode(AbstractNode $node)
 	{
