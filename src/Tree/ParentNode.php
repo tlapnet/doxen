@@ -45,25 +45,23 @@ class ParentNode extends AbstractNode
 	 * @param AbstractNode $node
 	 * @return void
 	 */
-	public function addNode($node)
+	public function addNode(AbstractNode $node)
 	{
 		$node->setParent($this);
 		$this->nodes[$node->getId()] = $node;
+		$this->attached($node);
 	}
 
 
 	/**
 	 * @param AbstractNode $node
 	 */
-	public function removeNode($node)
+	public function removeNode(AbstractNode $node)
 	{
-		if ($this->getParent()) {
-			$this->getParent()->removeNode($node);
-		}
-
 		$nodeId = $node->getId();
 		if ($this->hasNode($nodeId)) {
 			unset($this->nodes[$nodeId]);
+			$this->detached($node);
 		}
 	}
 

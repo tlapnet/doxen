@@ -29,19 +29,21 @@ class RootNode extends ParentNode
 
 	/**
 	 * @param AbstractNode $node
-	 */
-	public function removeNode($node)
-	{
-		unset($this->paths[$node->getPath()]);
-	}
-
-	/**
-	 * @param AbstractNode $node
 	 * @return void
 	 */
 	protected function attached(AbstractNode $node)
 	{
 		$this->paths[$node->getPath()] = $node;
+	}
+
+
+	/**
+	 * @param AbstractNode $node
+	 * @return void
+	 */
+	protected function detached(AbstractNode $node)
+	{
+		unset($this->paths[$node->getPath()]);
 	}
 
 }

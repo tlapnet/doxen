@@ -103,7 +103,6 @@ abstract class AbstractNode
 		$this->setId($nodeId);
 		$this->setPath($nodePath);
 		$this->setLevel(count($parents));
-		$parent->attached($this);
 	}
 
 	/**
@@ -207,6 +206,20 @@ abstract class AbstractNode
 	 */
 	protected function attached(AbstractNode $node)
 	{
+		if ($this->parent) {
+			$this->parent->attached($node);
+		}
+	}
+
+	/**
+	 * @param AbstractNode $node
+	 * @return void
+	 */
+	protected function detached(AbstractNode $node)
+	{
+		if ($this->parent) {
+			$this->parent->detached($node);
+		}
 	}
 
 	/**
@@ -228,17 +241,6 @@ abstract class AbstractNode
 		}
 
 		return $parents;
-	}
-
-
-	/**
-	 * remove node from tree
-	 */
-	public function remove()
-	{
-		if ($this->getParent()) {
-			$this->getParent()->removeNode($this);
-		}
 	}
 
 }
