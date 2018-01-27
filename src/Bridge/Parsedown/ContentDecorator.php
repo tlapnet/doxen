@@ -77,7 +77,7 @@ class ContentDecorator implements IListener
 		$docTree = $event->getDocTree();
 		$control = $event->getControl();
 
-		$imageNode = $docTree->getNode($control->page);
+		$imageNode = $control->page ? $docTree->getNode($control->page) : $docTree->getHomepage();
 		$imageLink = $control->getParameter('imageLink', FALSE);
 
 		// prepare image
