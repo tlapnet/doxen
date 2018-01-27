@@ -1,13 +1,14 @@
 {var $headers => isset($elements['headers']) ? $elements['headers'] : []}
-
-<div class="toc-list">
-    <ul n:inner-foreach="$headers as $header">
-        {var $el => $header['element']}
-        <li class="headline level level-{$el['name']}">
-            <a href="#{$el['attributes']['id']}">
-                {$el['text']}
-            </a>
-        </li>
-    </ul>
-</div>
-
+{if count($headers) > 1}
+	<h3>Obsah</h3>
+	<div class="toc-list">
+		<ul n:inner-foreach="$headers as $header">
+			{var $el => $header['element']}
+			<li class="headline level level-{$el['name']}">
+				<a href="#{$el['attributes']['id']}">
+					{$el['text']}
+				</a>
+			</li>
+		</ul>
+	</div>
+{/if}
