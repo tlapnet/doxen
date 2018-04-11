@@ -1,22 +1,30 @@
 <?xml version="1.0"?>
 <ruleset name="Tlapnet">
-    <!-- Extending rulesets-->
+    <!-- Extending rulesets -->
     <rule ref="vendor/ninjify/coding-standard/ruleset.xml"/>
 
-    <!-- Tlapnet -->
+    <!-- My rules -->
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array" value="
-                src=>Tlapnet\Doxen
+                src=>Tlapnet\Doxen,
+                tests/fixtures=>Tests\Fixtures
             "/>
         </properties>
     </rule>
 
-    <!-- Exclude -->
+    <rule ref="Generic.WhiteSpace.ScopeIndent">
+        <properties>
+            <property name="indent" value="4"/>
+            <property name="tabIndent" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="Generic.WhiteSpace.DisallowSpaceIndent" />
+
     <rule ref="SlevomatCodingStandard.ControlStructures.AssignmentInCondition">
         <exclude name="SlevomatCodingStandard.ControlStructures.AssignmentInCondition.assignmentInCondition"/>
     </rule>
-    <rule ref="Squiz.Commenting.VariableComment.WrongStyle">
-        <exclude name="Squiz.Commenting.VariableComment.WrongStyle"/>
-    </rule>
+
+    <!-- Exclude folders -->
+    <exclude-pattern>/tests/tmp</exclude-pattern>
 </ruleset>
