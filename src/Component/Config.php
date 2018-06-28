@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Component;
 
@@ -8,10 +8,10 @@ class Config
 {
 
 	/** @var bool */
-	private $showBreadcrumb = TRUE;
+	private $showBreadcrumb = true;
 
 	/** @var bool */
-	private $showMenu = TRUE;
+	private $showMenu = true;
 
 	/** @var string */
 	private $layoutTemplate = __DIR__ . '/template/layout.latte';
@@ -34,186 +34,115 @@ class Config
 	/** @var string */
 	private $cssStyleFile = __DIR__ . '/style/doxen.css';
 
-	/**
-	 * @return bool
-	 */
-	public function isShowBreadcrumb()
+	public function isShowBreadcrumb(): bool
 	{
 		return $this->showBreadcrumb;
 	}
 
-	/**
-	 * @param bool $show
-	 * @return self
-	 */
-	public function setShowBreadcrumb($show = TRUE)
+	public function setShowBreadcrumb(bool $show = true): self
 	{
-		$this->showBreadcrumb = boolval($show);
+		$this->showBreadcrumb = $show;
 
 		return $this;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isShowMenu()
+	public function isShowMenu(): bool
 	{
 		return $this->showMenu;
 	}
 
-	/**
-	 * @param bool $show
-	 * @return self
-	 */
-	public function setShowMenu($show = TRUE)
+	public function setShowMenu(bool $show = true): self
 	{
-		$this->showMenu = boolval($show);
+		$this->showMenu = $show;
 
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getLayoutTemplate()
+	public function getLayoutTemplate(): string
 	{
 		return $this->layoutTemplate;
 	}
 
-	/**
-	 * @param string $layoutTemplate
-	 * @return self
-	 */
-	public function setLayoutTemplate($layoutTemplate)
+	public function setLayoutTemplate(string $layoutTemplate): self
 	{
 		$this->layoutTemplate = $layoutTemplate;
 
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getDocTemplate()
+	public function getDocTemplate(): string
 	{
 		return $this->docTemplate;
 	}
 
-	/**
-	 * @param string $docTemplate
-	 * @return self
-	 */
-	public function setDocTemplate($docTemplate)
+	public function setDocTemplate(string $docTemplate): self
 	{
 		$this->docTemplate = $docTemplate;
 
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getListTemplate()
+	public function getListTemplate(): string
 	{
 		return $this->listTemplate;
 	}
 
-	/**
-	 * @param string $listTemplate
-	 * @return self
-	 */
-	public function setListTemplate($listTemplate)
+	public function setListTemplate(string $listTemplate): self
 	{
 		$this->listTemplate = $listTemplate;
 
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getMenuTemplate()
+	public function getMenuTemplate(): string
 	{
 		return $this->menuTemplate;
 	}
 
-	/**
-	 * @param string $menuTemplate
-	 * @return self
-	 */
-	public function setMenuTemplate($menuTemplate)
+	public function setMenuTemplate(string $menuTemplate): self
 	{
 		$this->menuTemplate = $menuTemplate;
 
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getBreadcrumbTemplate()
+	public function getBreadcrumbTemplate(): string
 	{
 		return $this->breadcrumbTemplate;
 	}
 
-	/**
-	 * @param string $breadcrumbTemplate
-	 * @return self
-	 */
-	public function setBreadcrumbTemplate($breadcrumbTemplate)
+	public function setBreadcrumbTemplate(string $breadcrumbTemplate): self
 	{
 		$this->breadcrumbTemplate = $breadcrumbTemplate;
 
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getSearchTemplate()
+	public function getSearchTemplate(): string
 	{
 		return $this->searchTemplate;
 	}
 
-	/**
-	 * @param string $searchTemplate
-	 * @return self
-	 */
-	public function setSearchTemplate($searchTemplate)
+	public function setSearchTemplate(string $searchTemplate): self
 	{
 		$this->searchTemplate = $searchTemplate;
 
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getCssStyleFile()
+	public function getCssStyleFile(): string
 	{
 		return $this->cssStyleFile;
 	}
 
-	/**
-	 * @param string $cssStyleFile
-	 * @return self
-	 */
-	public function setCssStyleFile($cssStyleFile)
+	public function setCssStyleFile(string $cssStyleFile): self
 	{
 		$this->cssStyleFile = $cssStyleFile;
 
 		return $this;
 	}
 
-	/**
-	 * TEMPLATE HELPERS ********************************************************
-	 */
-
-	/**
-	 * @param Template $template
-	 * @return void
-	 */
-	public function setupTemplate(Template $template)
+	public function setupTemplate(Template $template): void
 	{
 		$template->layoutTemplate = $this->layoutTemplate;
 		$template->menuTemplate = $this->menuTemplate;

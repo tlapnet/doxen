@@ -2,7 +2,9 @@
 
 namespace Tlapnet\Doxen\Exception;
 
-class RuntimeException extends \RuntimeException
+use LogicException;
+
+class LogicalException extends LogicException
 {
 
 }

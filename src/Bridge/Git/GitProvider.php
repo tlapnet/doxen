@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Bridge\Git;
 
@@ -10,11 +10,7 @@ use Tlapnet\Doxen\Tree\FileNode;
 class GitProvider extends AbstractNodeListener
 {
 
-	/**
-	 * @param NodeEvent $event
-	 * @return void
-	 */
-	public function decorateNode(NodeEvent $event)
+	public function decorateNode(NodeEvent $event): void
 	{
 		if (!($node = $this->getFileNode($event)))
 			return;
@@ -22,13 +18,13 @@ class GitProvider extends AbstractNodeListener
 		if (!file_exists($node->getFilename()))
 			return;
 
-		$author = self::git($node, 'log -1 --format="%cn"', TRUE);
-		$email = self::git($node, 'log -1 --format="%ce"', TRUE);
-		$date = self::git($node, 'log -1 --format="%cd"', TRUE);
+		$author = self::git($node, 'log -1 --format="%cn"', true);
+		$email = self::git($node, 'log -1 --format="%ce"', true);
+		$date = self::git($node, 'log -1 --format="%cd"', true);
 		$date = new DateTime($date);
 
 		$topLevel = self::git($node, 'rev-parse --show-toplevel');
-		$gitFileName = str_replace($topLevel . '/', NULL, $node->getFilename());
+		$gitFileName = str_replace($topLevel . '/', null, $node->getFilename());
 		$currentBranch = self::git($node, 'rev-parse --abbrev-ref HEAD');
 		$originUrl = self::git($node, 'config --get remote.origin.url');
 		$nameParts = explode(':', $originUrl);
@@ -47,13 +43,7 @@ class GitProvider extends AbstractNodeListener
 		]);
 	}
 
-	/**
-	 * @param FileNode $node
-	 * @param string $command
-	 * @param bool $appendFileName
-	 * @return string
-	 */
-	private static function git(FileNode $node, $command, $appendFileName = FALSE)
+	private static function git(FileNode $node, string $command, bool $appendFileName = false): string
 	{
 		$fileName = $node->getFilename();
 		$dirName = dirname($fileName);

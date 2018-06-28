@@ -1,38 +1,29 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Widget;
 
 class WidgetSection
 {
 
-	/** @var array */
+	/** @var callable[] */
 	private $parts = [];
 
 	/**
-	 * @return array
+	 * @return callable[]
 	 */
-	public function getParts()
+	public function getParts(): array
 	{
 		return $this->parts;
 	}
 
-	/**
-	 * @param string $key
-	 * @param callable $renderer
-	 * @return void
-	 */
-	public function add($key, callable $renderer)
+	public function add(string $key, callable $renderer): void
 	{
 		$this->parts[$key] = $renderer;
 	}
 
-	/**
-	 * @param string $key
-	 * @return mixed
-	 */
-	public function get($key)
+	public function get(string $key): ?callable
 	{
-		return isset($this->parts[$key]) ? $this->parts[$key] : NULL;
+		return $this->parts[$key] ?? null;
 	}
 
 }

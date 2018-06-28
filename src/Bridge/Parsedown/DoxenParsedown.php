@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Bridge\Parsedown;
 
@@ -9,7 +9,7 @@ use Parsedown;
 class DoxenParsedown extends Parsedown
 {
 
-	/** @var array */
+	/** @var mixed[] */
 	protected $elements = [
 		'headers' => [],
 	];
@@ -17,37 +17,35 @@ class DoxenParsedown extends Parsedown
 	/** @var Control */
 	private $control;
 
-	/**
-	 * @param Control $control
-	 */
 	public function __construct(Control $control)
 	{
 		$this->control = $control;
 	}
 
 	/**
-	 * @return array
+	 * @return mixed[]
 	 */
-	public function getElements()
+	public function getElements(): array
 	{
 		return $this->elements;
 	}
 
 	/**
-	 * @param array $Excerpt
-	 * @return array
+	 * @param mixed[] $excerpt
+	 * @return mixed[]
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	protected function inlineLink($Excerpt)
+	protected function inlineLink($excerpt): array
 	{
-		$link = parent::inlineLink($Excerpt);
+		$link = parent::inlineLink($excerpt);
 
-		if ($link === NULL) {
-			return NULL;
+		if ($link === null) {
+			return null;
 		}
 
 		// change relative link to control signal
 		if (empty(parse_url($link['element']['attributes']['href'], PHP_URL_SCHEME))) {
-			if (isset($Excerpt['is_image'])) {
+			if (isset($excerpt['is_image'])) {
 				$link['element']['attributes']['href'] = $this->control->link('event!', ['type' => ContentDecorator::SIGNAL_PARSEDOWN_IMAGE, 'imageLink' => $link['element']['attributes']['href']]);
 			} else {
 				$link['element']['attributes']['href'] = $this->control->link('this', ['page' => $link['element']['attributes']['href']]);
@@ -59,23 +57,24 @@ class DoxenParsedown extends Parsedown
 	}
 
 	/**
-	 * @param array $Excerpt
-	 * @return array
+	 * @param mixed[] $excerpt
+	 * @return mixed[]
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	protected function inlineImage($Excerpt)
+	protected function inlineImage($excerpt): array
 	{
-		$Excerpt['is_image'] = TRUE;
+		$excerpt['is_image'] = true;
 
-		return parent::inlineImage($Excerpt);
+		return parent::inlineImage($excerpt);
 	}
 
 	/**
-	 * @param mixed $Line
-	 * @return array
+	 * @param mixed $line
+	 * @return mixed[]
 	 */
-	protected function blockHeader($Line)
+	protected function blockHeader($line): array
 	{
-		$block = parent::blockHeader($Line);
+		$block = parent::blockHeader($line);
 		$block['element']['attributes'] = ['id' => 'toc-' . (count($this->elements['headers']) + 1) . '-' . Strings::webalize($block['element']['text'])];
 
 		$this->elements['headers'][] = $block;

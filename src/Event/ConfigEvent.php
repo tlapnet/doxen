@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Event;
 
@@ -10,19 +10,13 @@ final class ConfigEvent extends AbstractEvent
 	/** @var Config */
 	private $config;
 
-	/**
-	 * @param Config $config
-	 */
 	public function __construct(Config $config)
 	{
 		$this->type = self::TYPE_CONFIG;
 		$this->config = $config;
 	}
 
-	/**
-	 * @return Config
-	 */
-	public function getConfig()
+	public function getConfig(): Config
 	{
 		return $this->config;
 	}

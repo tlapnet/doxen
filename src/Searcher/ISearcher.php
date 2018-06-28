@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Searcher;
 
@@ -9,10 +9,8 @@ interface ISearcher
 {
 
 	/**
-	 * @param DocTree $docTree
-	 * @param string $query
 	 * @return AbstractNode[]
 	 */
-	public function search(DocTree $docTree, $query);
+	public function search(DocTree $docTree, string $query): array;
 
 }

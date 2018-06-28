@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Bridge\Git;
 
@@ -11,11 +11,7 @@ use Tlapnet\Doxen\Widget\Widgets;
 class LastUpdateDecorator extends AbstractNodeListener
 {
 
-	/**
-	 * @param NodeEvent $event
-	 * @return void
-	 */
-	public function decorateNode(NodeEvent $event)
+	public function decorateNode(NodeEvent $event): void
 	{
 		if (!($node = $this->getFileNode($event))) return;
 
@@ -25,14 +21,14 @@ class LastUpdateDecorator extends AbstractNodeListener
 		$wm->get(Widgets::PAGE_MENU)->add('git', function (Template $template) use ($node) {
 			$git = $node->getMetadataPart('git');
 			if (!$git)
-				return NULL;
+				return null;
 
 			$author = $git['lastCommiterName'];
 			$email = $git['lastCommiterEmail'];
 			$date = $git['lastCommiterDate'];
 
 			if (!$author && !$date)
-				return NULL;
+				return null;
 
 			$template->author = $author;
 			$template->email = $email;

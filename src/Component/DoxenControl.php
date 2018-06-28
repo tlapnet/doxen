@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Component;
 
+use Nette\Application\IPresenter;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Presenter;
 use Tlapnet\Doxen\Event\AbstractControlEvent;
@@ -37,19 +38,15 @@ class DoxenControl extends Control
 	private $searcher;
 
 	/** @var SearchResult[] */
-	private $searchResult = NULL;
+	private $searchResult = [];
 
-	/** @var string */
-	private $searchQuery = NULL;
+	/** @var string|null */
+	private $searchQuery;
 
 	/** @var WidgetRenderer */
 	private $widgetRenderer;
 
-	/**
-	 * @param DocTree $tree
-	 * @param Config|NULL $config [optional]
-	 */
-	public function __construct(DocTree $tree, Config $config = NULL)
+	public function __construct(DocTree $tree, ?Config $config = null)
 	{
 		parent::__construct();
 		$this->tree = $tree;
@@ -57,10 +54,10 @@ class DoxenControl extends Control
 	}
 
 	/**
-	 * @param object $presenter
-	 * @return void
+	 * @param IPresenter $presenter
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	protected function attached($presenter)
+	protected function attached($presenter): void
 	{
 		parent::attached($presenter);
 
@@ -71,64 +68,39 @@ class DoxenControl extends Control
 		}
 	}
 
-	/**
-	 * SEARCH ******************************************************************
-	 */
-
-	/**
-	 * @param ISearcher $searcher
-	 * @return void
-	 */
-	public function setSearcher(ISearcher $searcher)
+	public function setSearcher(ISearcher $searcher): void
 	{
 		$this->searcher = $searcher;
 	}
 
 	/**
 	 * Handle incoming search request
-	 *
-	 * @return void
 	 */
-	public function handleSearch()
+	public function handleSearch(): void
 	{
 		$query = $this->getPresenter()->getHttpRequest()->getPost('query');
-		if ($this->searcher && !is_null($query)) {
+		if ($this->searcher && $query !== null) {
 			$this->searchQuery = $query;
 			$this->searchResult = $this->searcher->search($this->tree, $query);
 		}
 	}
 
-	/**
-	 * LISTENERS ***************************************************************
-	 */
-
-	/**
-	 * @param string $type
-	 * @return void
-	 */
-	public function handleEvent($type)
+	public function handleEvent(string $type): void
 	{
 		if (!empty($type)) {
 			$this->emit(new SignalEvent($this->tree, $type));
 		}
 	}
 
-	/**
-	 * @param IListener $listener
-	 * @return void
-	 */
-	public function registerListener(IListener $listener)
+	public function registerListener(IListener $listener): void
 	{
 		$this->listeners[] = $listener;
 	}
 
 	/**
 	 * Emitt specified event to all listener
-	 *
-	 * @param AbstractEvent $event
-	 * @return AbstractEvent
 	 */
-	public function emit(AbstractEvent $event)
+	public function emit(AbstractEvent $event): AbstractEvent
 	{
 		if ($event instanceof AbstractControlEvent) {
 			$event->setControl($this);
@@ -142,15 +114,9 @@ class DoxenControl extends Control
 	}
 
 	/**
-	 * RENDERERS ***************************************************************
-	 */
-
-	/**
 	 * Called before template is gonna be rendered
-	 *
-	 * @return void
 	 */
-	protected function beforeRender()
+	protected function beforeRender(): void
 	{
 		$this->template->_widgetRenderer = $this->widgetRenderer;
 		$this->template->tree = $this->tree;
@@ -168,14 +134,12 @@ class DoxenControl extends Control
 
 	/**
 	 * Main render entrypoint
-	 *
-	 * @return void
 	 */
-	public function render()
+	public function render(): void
 	{
 		$this->beforeRender();
 
-		if ($this->searchResult === NULL) {
+		if ($this->searchResult === []) {
 			$this->renderDoc();
 		} else {
 			$this->renderSearch();
@@ -184,10 +148,8 @@ class DoxenControl extends Control
 
 	/**
 	 * Render single page
-	 *
-	 * @return void
 	 */
-	private function renderDoc()
+	private function renderDoc(): void
 	{
 		// prepare template
 		$this->template->setFile($this->config->getDocTemplate());
@@ -219,10 +181,8 @@ class DoxenControl extends Control
 
 	/**
 	 * Render homepage
-	 *
-	 * @return void
 	 */
-	private function renderHomepage()
+	private function renderHomepage(): void
 	{
 		$homepageNode = $this->tree->getHomepage();
 		$this->emit(new NodeEvent($homepageNode));
@@ -238,10 +198,8 @@ class DoxenControl extends Control
 
 	/**
 	 * Render search
-	 *
-	 * @return void
 	 */
-	private function renderSearch()
+	private function renderSearch(): void
 	{
 		$this->template->setFile($this->config->getSearchTemplate());
 		$this->template->page = '';

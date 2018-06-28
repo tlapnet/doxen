@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Exception\Logic;
 
-use Tlapnet\Doxen\Exception\LogicException;
+use Tlapnet\Doxen\Exception\LogicalException;
 
-class InvalidArgumentException extends LogicException
+class InvalidArgumentException extends LogicalException
 {
 
 }

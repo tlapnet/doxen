@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Listener;
 
@@ -7,32 +7,21 @@ use Tlapnet\Doxen\Event\AbstractEvent;
 abstract class AbstractTypeListener implements IListener
 {
 
-	/** @var string */
+	/** @var int */
 	private $accept;
 
-	/**
-	 * @param string $accept
-	 */
-	public function __construct($accept)
+	public function __construct(int $accept)
 	{
 		$this->accept = $accept;
 	}
 
-	/**
-	 * @param AbstractEvent $event
-	 * @return void
-	 */
-	public function listen(AbstractEvent $event)
+	public function listen(AbstractEvent $event): void
 	{
 		if ($event->getType() === $this->accept) {
 			$this->decorate($event);
 		}
 	}
 
-	/**
-	 * @param AbstractEvent $event
-	 * @return void
-	 */
-	abstract public function decorate(AbstractEvent $event);
+	abstract public function decorate(AbstractEvent $event): void;
 
 }

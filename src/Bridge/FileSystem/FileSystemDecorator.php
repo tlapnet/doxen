@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Bridge\FileSystem;
 
@@ -12,11 +12,7 @@ use Tlapnet\Doxen\Widget\Widgets;
 class FileSystemDecorator extends AbstractNodeListener
 {
 
-	/**
-	 * @param NodeEvent $event
-	 * @return void
-	 */
-	public function decorateNode(NodeEvent $event)
+	public function decorateNode(NodeEvent $event): void
 	{
 		if (!($node = $this->getFileNode($event))) return;
 

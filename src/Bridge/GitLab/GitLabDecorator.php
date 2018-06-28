@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Bridge\GitLab;
 
@@ -11,11 +11,7 @@ use Tlapnet\Doxen\Widget\Widgets;
 class GitLabDecorator extends AbstractNodeListener
 {
 
-	/**
-	 * @param NodeEvent $event
-	 * @return void
-	 */
-	public function decorateNode(NodeEvent $event)
+	public function decorateNode(NodeEvent $event): void
 	{
 		if (!($node = $this->getFileNode($event)))
 			return;
@@ -28,7 +24,7 @@ class GitLabDecorator extends AbstractNodeListener
 			$git = $node->getMetadataPart('git');
 			$global = $node->getMetadataPart('global');
 			if (!$git || !$global)
-				return NULL;
+				return null;
 
 			$link = $global['git']['url'] . '/' . $git['projectName'] . '/edit/' . $git['currentBranch'] . '/' . $git['fileName'];
 

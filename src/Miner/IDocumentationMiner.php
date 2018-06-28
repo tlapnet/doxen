@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Miner;
 
@@ -7,9 +7,6 @@ use Tlapnet\Doxen\Tree\DocTree;
 interface IDocumentationMiner
 {
 
-	/**
-	 * @return DocTree
-	 */
-	public function createTree();
+	public function createTree(): DocTree;
 
 }

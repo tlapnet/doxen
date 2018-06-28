@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Bridge\Parsedown;
 
-use Exception;
 use InvalidArgumentException;
 use Nette\Application\Responses\CallbackResponse;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\Utils\Image;
 use Nette\Utils\Strings;
+use Throwable;
 use Tlapnet\Doxen\Event\AbstractEvent;
 use Tlapnet\Doxen\Event\NodeEvent;
 use Tlapnet\Doxen\Event\SignalEvent;
@@ -20,13 +20,9 @@ use Tlapnet\Doxen\Tree\TextNode;
 class ContentDecorator implements IListener
 {
 
-	const SIGNAL_PARSEDOWN_IMAGE = 'parsedown2image';
+	public const SIGNAL_PARSEDOWN_IMAGE = 'parsedown2image';
 
-	/**
-	 * @param AbstractEvent $event
-	 * @return void
-	 */
-	public function listen(AbstractEvent $event)
+	public function listen(AbstractEvent $event): void
 	{
 		if ($event->getType() === AbstractEvent::TYPE_NODE) {
 			$this->decorateNode($event);
@@ -35,11 +31,7 @@ class ContentDecorator implements IListener
 		}
 	}
 
-	/**
-	 * @param NodeEvent $event
-	 * @return void
-	 */
-	private function decorateNode(NodeEvent $event)
+	private function decorateNode(NodeEvent $event): void
 	{
 		/** @var TextNode $node */
 		$node = $event->getNode();
@@ -57,28 +49,20 @@ class ContentDecorator implements IListener
 		$node->setContent($content);
 	}
 
-	/**
-	 * @param SignalEvent $event
-	 * @return void
-	 */
-	private function decorateSignal(SignalEvent $event)
+	private function decorateSignal(SignalEvent $event): void
 	{
 		if ($event->getSignal() === self::SIGNAL_PARSEDOWN_IMAGE) {
 			$this->processImage($event);
 		}
 	}
 
-	/**
-	 * @param SignalEvent $event
-	 * @return void
-	 */
-	private function processImage(SignalEvent $event)
+	private function processImage(SignalEvent $event): void
 	{
 		$docTree = $event->getDocTree();
 		$control = $event->getControl();
 
 		$imageNode = $control->page ? $docTree->getNode($control->page) : $docTree->getHomepage();
-		$imageLink = $control->getParameter('imageLink', FALSE);
+		$imageLink = $control->getParameter('imageLink', false);
 
 		// prepare image
 		if ($imageNode
@@ -92,7 +76,7 @@ class ContentDecorator implements IListener
 		}
 
 		// prepare and send image reponse
-		$response = new CallbackResponse(function (IRequest $httpRequest, IResponse $httpResponse) use ($image) {
+		$response = new CallbackResponse(function (IRequest $httpRequest, IResponse $httpResponse) use ($image): void {
 			$httpResponse->addHeader('Content-Type', 'image/jpeg');
 			echo $image->toString(Image::JPEG, 94);
 		});
@@ -100,16 +84,11 @@ class ContentDecorator implements IListener
 		$control->getPresenter()->sendResponse($response);
 	}
 
-	/**
-	 * @param FileNode $node
-	 * @param string $imageLink
-	 * @return Image
-	 */
-	private function getImage(FileNode $node, $imageLink)
+	private function getImage(FileNode $node, string $imageLink): Image
 	{
 		try {
 			// check if image path is part of original doc file content
-			if (strpos($node->getContent(), $imageLink) === FALSE) {
+			if (strpos($node->getContent(), $imageLink) === false) {
 				throw new InvalidArgumentException(sprintf("Image path %s is not a part of doc file '%s' content", $imageLink, $node->getFilename()));
 			}
 
@@ -128,7 +107,7 @@ class ContentDecorator implements IListener
 			}
 
 			$image = Image::fromFile($imagePath); // UnknownImageFileException if file is not image
-		} catch (Exception $e) {
+		} catch (Throwable $e) {
 			$image = $this->getErrorImage();
 		}
 
@@ -136,10 +115,7 @@ class ContentDecorator implements IListener
 	}
 
 
-	/**
-	 * @return Image
-	 */
-	private function getErrorImage()
+	private function getErrorImage(): Image
 	{
 		$image = Image::fromBlank(400, 100, Image::rgb(250, 140, 140));
 		$image->string(5, 20, 40, 'Image load problem.', imagecolorallocate($image, 0, 255, 255));

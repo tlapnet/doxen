@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Miner;
 
 use Nette\InvalidStateException;
 use Nette\Utils\Finder;
+use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\DocTree;
 use Tlapnet\Doxen\Tree\FileNode;
 use Tlapnet\Doxen\Tree\ParentNode;
@@ -12,36 +13,29 @@ use Tlapnet\Doxen\Tree\TextNode;
 final class FileDocumentationMiner implements IDocumentationMiner
 {
 
-	/** @var array */
+	/** @var string[] */
 	private $supportedDocMask = ['*.md'];
 
-	/** @var array parsed configuration neon file */
+	/** @var mixed[] parsed configuration neon file */
 	private $config = [];
 
-	/** @var FileNode */
-	private $homepage = NULL;
+	/** @var FileNode|null */
+	private $homepage;
 
-	/** @var array */
-	private $docTree = NULL;
+	/** @var DocTree|null */
+	private $docTree;
 
 	/**
-	 * @param array $config
+	 * @param mixed[] $config
 	 */
 	public function __construct(array $config)
 	{
 		$this->config = $config;
 	}
 
-	/**
-	 * API *********************************************************************
-	 */
-
-	/**
-	 * @return DocTree
-	 */
-	public function createTree()
+	public function createTree(): DocTree
 	{
-		if (!$this->docTree) {
+		if ($this->docTree === null) {
 			$docFiles = $this->loadDocFiles($this->config['doc']);
 
 			$this->docTree = $this->createDocTree($docFiles);
@@ -52,13 +46,9 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	}
 
 	/**
-	 * HELPERS *********************************************************************
-	 */
-
-	/**
 	 * @return FileNode|TextNode
 	 */
-	private function getHomepage()
+	private function getHomepage(): AbstractNode
 	{
 		$homepage = new TextNode('Homepage'); // default homepage
 		$homepage->setTitle('Homepage');
@@ -90,10 +80,9 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	}
 
 	/**
-	 * @param array $docFiles
-	 * @return DocTree
+	 * @param mixed[] $docFiles
 	 */
-	private function createDocTree(array $docFiles)
+	private function createDocTree(array $docFiles): DocTree
 	{
 		$tree = new DocTree();
 
@@ -112,11 +101,9 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	}
 
 	/**
-	 * @param array $docFiles
-	 * @param ParentNode $parentNode
-	 * @return ParentNode
+	 * @param mixed[] $docFiles
 	 */
-	private function createNodes(array $docFiles, ParentNode $parentNode)
+	private function createNodes(array $docFiles, ParentNode $parentNode): ParentNode
 	{
 		foreach ($docFiles as $k => $v) {
 			if (is_array($v)) {
@@ -132,12 +119,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 		return $parentNode;
 	}
 
-	/**
-	 * @param string $title
-	 * @param string $filename
-	 * @return FileNode
-	 */
-	private function createFileNode($title, $filename)
+	private function createFileNode(string $title, string $filename): FileNode
 	{
 		$fileNode = new FileNode($filename);
 		$fileNode->setTitle($title);
@@ -145,7 +127,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 		if (isset($this->config['home']['content']) && realpath($filename) === realpath($this->config['home']['content'])) {
 			// save current path as path to homepage file
 			$this->homepage = $fileNode;
-		} elseif (empty($this->homepage)) {
+		} elseif ($this->homepage === null) {
 			// if homepage is not set by configuration then first file from scanned directory is used
 			$this->homepage = $fileNode;
 		}
@@ -154,17 +136,17 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	}
 
 	/**
-	 * @param array $doc
-	 * @return array
+	 * @param mixed[] $doc
+	 * @return mixed[]
 	 */
-	private function loadDocFiles(array $doc)
+	private function loadDocFiles(array $doc): array
 	{
 		$result = [];
 		foreach ($doc as $key => $value) {
 			if (is_string($key)) { // key is menu title
 				$result[$key] = $this->loadDocFiles($value);
 			} else { // key is path to folder
-				$found = $this->findFilesAndFolders($value, TRUE);
+				$found = $this->findFilesAndFolders($value, true);
 				$result = array_merge($result, is_array($found) ? $found : [$found]);
 			}
 		}
@@ -173,17 +155,15 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	}
 
 	/**
-	 * @param string $docPath
-	 * @param bool $isRoot
-	 * @return array
+	 * @return mixed[]
 	 */
-	private function findFilesAndFolders($docPath, $isRoot = FALSE)
+	private function findFilesAndFolders(string $docPath, bool $isRoot = false): array
 	{
 		$result = [];
 		if (is_dir($docPath)) {
 			$resultFiles = [];
 			$resultDirectories = [];
-			$hasSubdoc = FALSE;
+			$hasSubdoc = false;
 			foreach (Finder::findDirectories('*')->in($docPath) as $path => $file) {
 				$subdoc = $this->findFilesAndFolders($path); // check for some documentation files in subdirectory (this skips /images etc. directories)
 				if (!empty($subdoc)) {
@@ -193,7 +173,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 					} else {
 						$resultFiles[$key] = $subdoc;
 					}
-					$hasSubdoc = TRUE;
+					$hasSubdoc = true;
 				}
 			}
 
@@ -217,14 +197,9 @@ final class FileDocumentationMiner implements IDocumentationMiner
 		return $result;
 	}
 
-	/**
-	 * @param string $filename
-	 * @return string
-	 */
-	private function normalizePathname($filename)
+	private function normalizePathname(string $filename): string
 	{
 		$filename = preg_replace('~^[0-9]+_~', '', $filename); // 01_Something => Something
-
 		return ucfirst(str_replace('_', ' ', $filename)); // some_text => Some text
 	}
 

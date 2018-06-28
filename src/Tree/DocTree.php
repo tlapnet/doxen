@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Tree;
 
@@ -8,34 +8,26 @@ use IteratorAggregate;
 class DocTree implements IteratorAggregate
 {
 
-	/** @var AbstractNode */
+	/** @var AbstractNode|null */
 	private $homepage;
 
 	/** @var RootNode */
 	private $rootNode;
 
-	/**
-	 * DocTree constructor
-	 */
 	public function __construct()
 	{
 		$this->rootNode = new RootNode();
 	}
 
-	/**
-	 * @param string $path
-	 * @return AbstractNode
-	 */
-	public function getNode($path)
+	public function getNode(string $path): ?AbstractNode
 	{
 		return $this->rootNode->getNode($path);
 	}
 
 	/**
-	 * @param AbstractNode $node
 	 * @return AbstractNode[]
 	 */
-	public function getBreadcrumbs(AbstractNode $node)
+	public function getBreadcrumbs(AbstractNode $node): array
 	{
 		$parents = $node->getParents();
 		array_pop($parents);
@@ -45,44 +37,30 @@ class DocTree implements IteratorAggregate
 		return array_reverse($breadcrumb);
 	}
 
-	/**
-	 * @param AbstractNode $homepage
-	 * @return void
-	 */
-	public function setHomepage(AbstractNode $homepage)
+	public function getHomepage(): ?AbstractNode
+	{
+		return $this->homepage;
+	}
+
+	public function setHomepage(?AbstractNode $homepage): void
 	{
 		$this->homepage = $homepage;
 	}
 
 	/**
-	 * @return AbstractNode
-	 */
-	public function getHomepage()
-	{
-		return $this->homepage;
-	}
-
-	/**
 	 * @return AbstractNode[]
 	 */
-	public function getNodes()
+	public function getNodes(): array
 	{
 		return $this->rootNode->getNodes();
 	}
 
-	/**
-	 * @param AbstractNode $node
-	 * @return void
-	 */
-	public function addNode(AbstractNode $node)
+	public function addNode(AbstractNode $node): void
 	{
 		$this->rootNode->addNode($node);
 	}
 
-	/**
-	 * @return ArrayIterator
-	 */
-	public function getIterator()
+	public function getIterator(): ArrayIterator
 	{
 		return new ArrayIterator($this->getNodes());
 	}

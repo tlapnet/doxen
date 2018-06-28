@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Tree;
 
@@ -7,88 +7,65 @@ use Nette\Utils\Strings;
 abstract class AbstractNode
 {
 
-	const PATH_SEPARATOR = '/';
+	public const PATH_SEPARATOR = '/';
 
-	const  TYPE_ROOT = 1;
-	const  TYPE_NODE = 2;
-	const  TYPE_LEAF = 3;
+	public const
+		TYPE_ROOT = 1,
+		TYPE_NODE = 2,
+		TYPE_LEAF = 3;
 
-	/** @var string */
+	/** @var string|null */
 	protected $title;
 
-	/** @var string */
+	/** @var string|null */
 	protected $id;
 
-	/** @var string */
+	/** @var string|null */
 	protected $path;
 
-	/** @var ParentNode */
+	/** @var ParentNode|null */
 	protected $parent;
 
-	/** @var int */
+	/** @var int|null */
 	protected $level;
 
-	/** @var array */
+	/** @var mixed[] */
 	protected $metadata = [];
 
 	/** @var int */
 	protected $type = self::TYPE_LEAF;
 
-	/**
-	 * @return int
-	 */
-	public function getType()
+	public function getType(): int
 	{
 		return $this->type;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTitle()
+	public function getTitle(): ?string
 	{
 		return $this->title;
 	}
 
-	/**
-	 * @param string $title
-	 * @return void
-	 */
-	public function setTitle($title)
+	public function setTitle(?string $title): void
 	{
 		$this->title = $title;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getId()
+	public function getId(): ?string
 	{
 		return $this->id;
 	}
 
-	/**
-	 * @param string $id
-	 * @return void
-	 */
-	public function setId($id)
+	public function setId(?string $id): void
 	{
 		$this->id = $id;
 	}
 
-	/**
-	 * @return AbstractNode
-	 */
-	public function getParent()
+	public function getParent(): ?AbstractNode
 	{
 		return $this->parent;
 	}
 
-	/**
-	 * @param AbstractNode $parent
-	 * @return void
-	 */
-	public function setParent(AbstractNode $parent)
+	public function setParent(?AbstractNode $parent): void
 	{
 		$this->parent = $parent;
 		$nodeId = Strings::webalize($this->getTitle());
@@ -105,117 +82,77 @@ abstract class AbstractNode
 		$this->setLevel(count($parents));
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function hasNodes()
+	public function hasNodes(): bool
 	{
-		return FALSE;
+		return false;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getLevel()
+	public function getLevel(): ?int
 	{
 		return $this->level;
 	}
 
-	/**
-	 * @param int $level
-	 * @return void
-	 */
-	protected function setLevel($level)
+	protected function setLevel(?int $level): void
 	{
 		$this->level = $level;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getPath()
+	public function getPath(): ?string
 	{
 		return $this->path;
 	}
 
-	/**
-	 * @param string $path
-	 * @return void
-	 */
-	protected function setPath($path)
+	protected function setPath(?string $path): void
 	{
 		$this->path = $path;
 	}
 
 	/**
-	 * @return array
+	 * @return mixed[]
 	 */
-	public function getMetadata()
+	public function getMetadata(): array
 	{
 		return $this->metadata;
 	}
 
 	/**
-	 * @param string $key
+	 * @param mixed[] $metadata
+	 */
+	public function setMetadata(array $metadata): void
+	{
+		$this->metadata = $metadata;
+	}
+
+	/**
 	 * @return mixed
 	 */
-	public function getMetadataPart($key)
+	public function getMetadataPart(string $key)
 	{
 		if (!isset($this->metadata[$key])) {
-			return NULL;
+			return null;
 		}
 
 		return $this->metadata[$key];
 	}
 
 	/**
-	 * @param array $metadata
-	 * @return void
-	 */
-	public function setMetadata(array $metadata)
-	{
-		$this->metadata = $metadata;
-	}
-
-	/**
-	 * @param string $key
 	 * @param mixed $value
-	 * @return void
 	 */
-	public function setMetadataPart($key, $value)
+	public function setMetadataPart(string $key, $value): void
 	{
 		$this->metadata[$key] = $value;
 	}
 
-	/**
-	 * ABSTRACT ****************************************************************
-	 */
+	abstract public function getContent(): ?string;
 
-	/**
-	 * @return string
-	 */
-	abstract public function getContent();
-
-	/**
-	 * NODE MODEL **************************************************************
-	 */
-
-	/**
-	 * @param AbstractNode $node
-	 * @return void
-	 */
-	protected function attached(AbstractNode $node)
+	protected function attached(AbstractNode $node): void
 	{
 		if ($this->parent) {
 			$this->parent->attached($node);
 		}
 	}
 
-	/**
-	 * @param AbstractNode $node
-	 * @return void
-	 */
-	protected function detached(AbstractNode $node)
+	protected function detached(AbstractNode $node): void
 	{
 		if ($this->parent) {
 			$this->parent->detached($node);
@@ -223,19 +160,15 @@ abstract class AbstractNode
 	}
 
 	/**
-	 * LINKED-LIST HELPERS *****************************************************
-	 */
-
-	/**
 	 * @return AbstractNode[]
 	 */
-	public function getParents()
+	public function getParents(): array
 	{
 		$parents = [];
 		$tmp = $this;
 
 		// Iterate over all parents
-		while (($parent = $tmp->getParent()) !== NULL) {
+		while (($parent = $tmp->getParent()) !== null) {
 			$parents[] = $parent;
 			$tmp = $parent;
 		}

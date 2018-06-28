@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Widget;
 
@@ -10,19 +10,12 @@ class WidgetManager
 	/** @var AbstractNode */
 	private $node;
 
-	/**
-	 * @param AbstractNode $node
-	 */
 	public function __construct(AbstractNode $node)
 	{
 		$this->node = $node;
 	}
 
-	/**
-	 * @param string $section
-	 * @return WidgetSection
-	 */
-	public function get($section)
+	public function get(string $section): WidgetSection
 	{
 		$widgets = $this->node->getMetadataPart('widgets');
 

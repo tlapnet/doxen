@@ -1,9 +1,14 @@
-.DS_Store
-/.idea/
+# IDE
+/.idea
 
-/vendor/
+# Composer
+/vendor
 /composer.lock
 
-phpunit.xml
-
-!.gitkeep
+# Tests
+/temp/
+/tests/*.log
+/tests/tmp
+/tests/coverage.html
+/coverage.xml
+/phpunit.xml
