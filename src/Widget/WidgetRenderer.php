@@ -1,41 +1,31 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Widget;
 
-use Nette\Bridges\ApplicationLatte\Template;
+use Nette\Application\UI\ITemplate;
 use Nette\Utils\Arrays;
 use Tlapnet\Doxen\Tree\AbstractNode;
 
 final class WidgetRenderer
 {
 
-	/** @var Template */
+	/** @var ITemplate */
 	private $template;
 
-	/**
-	 * @param Template $template
-	 */
-	public function __construct(Template $template)
+	public function __construct(ITemplate $template)
 	{
 		$this->template = $template;
 	}
 
-	/**
-	 * @param AbstractNode $node
-	 * @param string $widget
-	 * @return void
-	 */
-	public function render(AbstractNode $node, $widget)
+	public function render(AbstractNode $node, string $widget): void
 	{
-		// @todo maybe return string??
-
 		// If there's no widgets, then skip it
 		if (!($widgets = $node->getMetadataPart('widgets'))) {
 			return;
 		}
 
 		// If there's no widget in widgets, then skip it
-		if (!($section = Arrays::get($widgets, $widget, NULL))) {
+		if (!($section = Arrays::get($widgets, $widget, null))) {
 			return;
 		}
 
@@ -44,9 +34,9 @@ final class WidgetRenderer
 			$template = clone $this->template;
 			$output = $partRenderer($template);
 
-			if ($output instanceof Template) {
+			if ($output instanceof ITemplate) {
 				$template->render();
-			} elseif ($output !== NULL) {
+			} elseif ($output !== null) {
 				echo $output;
 			}
 		}

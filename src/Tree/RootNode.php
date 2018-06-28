@@ -1,47 +1,30 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Tree;
 
 class RootNode extends ParentNode
 {
 
-	/** @var array */
+	/** @var AbstractNode[] */
 	private $paths = [];
 
-	/**
-	 * RootNode constructor
-	 */
 	public function __construct()
 	{
 		parent::__construct();
 		$this->type = AbstractNode::TYPE_ROOT;
 	}
 
-	/**
-	 * @param string $path
-	 * @return AbstractNode
-	 */
-	public function getNode($path)
+	public function getNode(string $path): ?AbstractNode
 	{
-		return array_key_exists($path, $this->paths) ? $this->paths[$path] : NULL;
+		return $this->paths[$path] ?? null;
 	}
 
-
-	/**
-	 * @param AbstractNode $node
-	 * @return void
-	 */
-	protected function attached(AbstractNode $node)
+	protected function attached(AbstractNode $node): void
 	{
 		$this->paths[$node->getPath()] = $node;
 	}
 
-
-	/**
-	 * @param AbstractNode $node
-	 * @return void
-	 */
-	protected function detached(AbstractNode $node)
+	protected function detached(AbstractNode $node): void
 	{
 		unset($this->paths[$node->getPath()]);
 	}

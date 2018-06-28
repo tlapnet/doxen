@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Searcher;
 
@@ -8,18 +8,16 @@ use Tlapnet\Doxen\Tree\DocTree;
 class MarkdownSearcher implements ISearcher
 {
 
-	/** @var  array */
+	/** @var AbstractNode[] */
 	private $fileList;
 
-	/** @var  array */
+	/** @var string[][]|null[][] */
 	private $titleList;
 
 	/**
-	 * @param DocTree $docTree
-	 * @param string $query
 	 * @return SearchResult[]
 	 */
-	public function search(DocTree $docTree, $query)
+	public function search(DocTree $docTree, string $query): array
 	{
 		if (empty($query)) {
 			return [];
@@ -30,12 +28,12 @@ class MarkdownSearcher implements ISearcher
 		$result = [];
 		foreach ($this->fileList as $path => $node) {
 			$content = $node->getContent();
-			if (!empty($content)) {
+			if ($content !== null) {
 				$separator = "\r\n";
 				$line = strtok($content, $separator);
-				while ($line !== FALSE) {
+				while ($line !== false) {
 					$line = trim($line);
-					if (stripos($line, $query) !== FALSE) {
+					if (stripos($line, $query) !== false) {
 
 						/* prioritize headlines
 						 *
@@ -72,7 +70,7 @@ class MarkdownSearcher implements ISearcher
 			$searchResult = new SearchResult();
 			$searchResult->setCount($lines['count']);
 			$searchResult->setLevel($lines['level']);
-			$searchResult->setTitle($this->titleList[$path]);
+			$searchResult->setTitles($this->titleList[$path]);
 			$searchResult->setNode($this->fileList[$path]);
 			$data[] = $searchResult;
 		}
@@ -81,11 +79,10 @@ class MarkdownSearcher implements ISearcher
 	}
 
 	/**
-	 * @param array $docTree
-	 * @param array $titlePath
-	 * @return void
+	 * @param AbstractNode[] $docTree
+	 * @param string[]|null[] $titlePath
 	 */
-	private function setAvailableFiles($docTree, $titlePath = [])
+	private function setAvailableFiles(array $docTree, array $titlePath = []): void
 	{
 		foreach ($docTree as $node) {
 			$t = $titlePath;

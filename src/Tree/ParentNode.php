@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Tree;
 
@@ -8,9 +8,6 @@ class ParentNode extends AbstractNode
 	/** @var AbstractNode[] */
 	private $nodes = [];
 
-	/**
-	 * ParentNode constructor
-	 */
 	public function __construct()
 	{
 		$this->type = self::TYPE_NODE;
@@ -19,45 +16,29 @@ class ParentNode extends AbstractNode
 	/**
 	 * @return AbstractNode[]
 	 */
-	public function getNodes()
+	public function getNodes(): array
 	{
 		return $this->nodes;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function hasNodes()
+	public function hasNodes(): bool
 	{
-		return !empty($this->nodes);
+		return $this->nodes !== [];
 	}
 
-	/**
-	 * @param string $nodeId
-	 * @return bool
-	 */
-	public function hasNode($nodeId)
+	public function hasNode(string $nodeId): bool
 	{
 		return array_key_exists($nodeId, $this->nodes);
 	}
 
-	/**
-	 * @param AbstractNode $node
-	 * @return void
-	 */
-	public function addNode(AbstractNode $node)
+	public function addNode(AbstractNode $node): void
 	{
 		$node->setParent($this);
 		$this->nodes[$node->getId()] = $node;
 		$this->attached($node);
 	}
 
-
-	/**
-	 * @param AbstractNode $node
-	 * @return void
-	 */
-	public function removeNode(AbstractNode $node)
+	public function removeNode(AbstractNode $node): void
 	{
 		$nodeId = $node->getId();
 		if ($this->hasNode($nodeId)) {
@@ -66,12 +47,9 @@ class ParentNode extends AbstractNode
 		}
 	}
 
-	/**
-	 * @return NULL
-	 */
-	public function getContent()
+	public function getContent(): ?string
 	{
-		return NULL;
+		return null;
 	}
 
 }

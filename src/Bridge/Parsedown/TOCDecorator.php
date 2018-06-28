@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Bridge\Parsedown;
 
@@ -11,11 +11,7 @@ use Tlapnet\Doxen\Widget\Widgets;
 class TOCDecorator extends AbstractNodeListener
 {
 
-	/**
-	 * @param NodeEvent $event
-	 * @return void
-	 */
-	public function decorateNode(NodeEvent $event)
+	public function decorateNode(NodeEvent $event): void
 	{
 		if (!($node = $this->getTextNode($event))) return;
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Searcher;
 
@@ -7,90 +7,60 @@ use Tlapnet\Doxen\Tree\AbstractNode;
 class SearchResult
 {
 
-	/**
-	 * @var string
-	 */
-	private $title;
+	/** @var string[] */
+	private $titles = [];
 
-	/**
-	 * @var int
-	 */
+	/** @var int|null */
 	private $level;
 
-	/**
-	 * @var int
-	 */
+	/** @var int|null */
 	private $count;
 
-	/**
-	 * @var AbstractNode
-	 */
+	/** @var AbstractNode|null */
 	private $node;
 
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	public function getTitle()
+	public function getTitles(): array
 	{
-		return $this->title;
+		return $this->titles;
 	}
 
 	/**
-	 * @param string $title
-	 * @return void
+	 * @param string[] $titles
 	 */
-	public function setTitle($title)
+	public function setTitles(array $titles): void
 	{
-		$this->title = $title;
+		$this->titles = $titles;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getLevel()
+	public function getLevel(): ?int
 	{
 		return $this->level;
 	}
 
-	/**
-	 * @param int $level
-	 * @return void
-	 */
-	public function setLevel($level)
+	public function setLevel(?int $level): void
 	{
-		$this->level = intval($level);
+		$this->level = $level;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getCount()
+	public function getCount(): ?int
 	{
 		return $this->count;
 	}
 
-	/**
-	 * @param int $count
-	 * @return void
-	 */
-	public function setCount($count)
+	public function setCount(?int $count): void
 	{
-		$this->count = intval($count);
+		$this->count = $count;
 	}
 
-	/**
-	 * @return AbstractNode
-	 */
-	public function getNode()
+	public function getNode(): ?AbstractNode
 	{
 		return $this->node;
 	}
 
-	/**
-	 * @param AbstractNode $node
-	 * @return void
-	 */
-	public function setNode(AbstractNode $node)
+	public function setNode(?AbstractNode $node): void
 	{
 		$this->node = $node;
 	}

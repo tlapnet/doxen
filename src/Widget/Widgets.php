@@ -1,11 +1,12 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Widget;
 
 final class Widgets
 {
 
-	const PAGE_MENU = 'page_menu';
-	const PAGE_TOC = 'page_toc';
+	public const
+		PAGE_MENU = 'page_menu',
+		PAGE_TOC = 'page_toc';
 
 }

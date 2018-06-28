@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Listener;
 
@@ -7,10 +7,6 @@ use Tlapnet\Doxen\Event\AbstractEvent;
 interface IListener
 {
 
-	/**
-	 * @param AbstractEvent $event
-	 * @return void
-	 */
-	public function listen(AbstractEvent $event);
+	public function listen(AbstractEvent $event): void;
 
 }

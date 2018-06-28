@@ -1,9 +1,17 @@
 {
   "name": "tlapnet/doxen",
   "description": "Documentation generator for PHP",
-  "keywords": ["nette", "php", "documentation", "markdown"],
+  "keywords": [
+    "nette",
+    "php",
+    "documentation",
+    "generator",
+    "markdown"
+  ],
   "type": "library",
-  "license": ["MIT"],
+  "license": [
+    "MIT"
+  ],
   "homepage": "https://github.com/tlapnet/doxen",
   "authors": [
     {
@@ -19,9 +27,11 @@
     "nette/application": "~2.4.11"
   },
   "require-dev": {
-    "ninjify/qa": "~0.4.0",
-    "ninjify/nunjuck": "~0.2.0"
+    "ninjify/qa": "^0.8.0",
+    "ninjify/nunjuck": "^0.2.0"
   },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "autoload": {
     "psr-4": {
       "Tlapnet\\Doxen\\": "src/"
@@ -41,7 +51,8 @@
     "phpstan-install": [
       "mkdir -p temp/phpstan",
       "composer require -d temp/phpstan phpstan/phpstan:0.9.2",
-      "composer require -d temp/phpstan phpstan/phpstan-nette:0.9"
+      "composer require -d temp/phpstan phpstan/phpstan-nette:0.9",
+      "composer require -d temp/phpstan phpstan/phpstan-strict-rules:0.9"
     ],
     "phpstan": [
       "temp/phpstan/vendor/bin/phpstan analyse -l max -c phpstan.neon src"
@@ -49,7 +60,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-develop": "0.2.x-dev"
+      "dev-develop": "1.1.x-dev"
     }
   }
 }

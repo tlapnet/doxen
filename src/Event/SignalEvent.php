@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Event;
 
@@ -10,11 +10,7 @@ final class SignalEvent extends DocTreeEvent
 	/** @var string */
 	private $signal;
 
-	/**
-	 * @param DocTree $docTree
-	 * @param string $signal
-	 */
-	public function __construct(DocTree $docTree, $signal)
+	public function __construct(DocTree $docTree, string $signal)
 	{
 		parent::__construct($docTree);
 
@@ -22,10 +18,7 @@ final class SignalEvent extends DocTreeEvent
 		$this->signal = $signal;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getSignal()
+	public function getSignal(): string
 	{
 		return $this->signal;
 	}

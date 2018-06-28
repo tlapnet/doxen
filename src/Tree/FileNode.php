@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Tree;
 
@@ -10,10 +10,7 @@ class FileNode extends TextNode
 	/** @var string */
 	private $filename;
 
-	/**
-	 * @param string $filename
-	 */
-	public function __construct($filename)
+	public function __construct(string $filename)
 	{
 		parent::__construct();
 		$this->filename = $filename;
@@ -23,10 +20,7 @@ class FileNode extends TextNode
 		}
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getContent()
+	public function getContent(): string
 	{
 		if (!$this->content) {
 			$this->rawContent = $this->content = file_get_contents($this->filename);
@@ -35,10 +29,7 @@ class FileNode extends TextNode
 		return $this->content;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getFilename()
+	public function getFilename(): string
 	{
 		return $this->filename;
 	}

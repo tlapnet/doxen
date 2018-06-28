@@ -20,7 +20,7 @@
 			{foreach $searchResult as $result}
 				<li>
 					<a n:href="this, page=>$result->getNode()->getPath()">
-						{foreach $result->getTitle() as $title}
+						{foreach $result->getTitles() as $title}
 							<strong>{$title}{if !$iterator->last} → {/if}</strong>
 						{/foreach}
 						<span style="font-size: .8em" class="badge pull-right" title="počet výskytů">

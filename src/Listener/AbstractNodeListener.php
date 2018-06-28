@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Listener;
 
@@ -20,46 +20,33 @@ abstract class AbstractNodeListener extends AbstractTypeListener
 	}
 
 	/**
-	 * @param AbstractEvent|NodeEvent $event
-	 * @return void
+	 * @param NodeEvent $event
 	 */
-	public function decorate(AbstractEvent $event)
+	public function decorate(AbstractEvent $event): void
 	{
 		$this->decorateNode($event);
 	}
 
-	/**
-	 * @param NodeEvent $event
-	 * @return void
-	 */
-	abstract public function decorateNode(NodeEvent $event);
+	abstract public function decorateNode(NodeEvent $event): void;
 
-	/**
-	 * @param NodeEvent $event
-	 * @return TextNode
-	 */
-	protected function getTextNode(NodeEvent $event)
+	protected function getTextNode(NodeEvent $event): ?TextNode
 	{
 		$node = $event->getNode();
 
-		if ($node->getType() !== AbstractNode::TYPE_LEAF) return NULL;
+		if ($node->getType() !== AbstractNode::TYPE_LEAF) return null;
 
-		if (!($node instanceof TextNode)) return NULL;
+		if (!($node instanceof TextNode)) return null;
 
 		return $node;
 	}
 
-	/**
-	 * @param NodeEvent $event
-	 * @return FileNode
-	 */
-	protected function getFileNode(NodeEvent $event)
+	protected function getFileNode(NodeEvent $event): ?FileNode
 	{
 		$node = $event->getNode();
 
-		if ($node->getType() !== AbstractNode::TYPE_LEAF) return NULL;
+		if ($node->getType() !== AbstractNode::TYPE_LEAF) return null;
 
-		if (!($node instanceof FileNode)) return NULL;
+		if (!($node instanceof FileNode)) return null;
 
 		return $node;
 	}

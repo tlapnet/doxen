@@ -1,45 +1,32 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Tree;
 
 class TextNode extends AbstractNode
 {
 
-	/** @var string */
+	/** @var string|null */
 	protected $content;
 
-	/** @var string */
+	/** @var string|null */
 	protected $rawContent;
 
-	/**
-	 * @param string $content
-	 */
-	public function __construct($content = NULL)
+	public function __construct(?string $content = null)
 	{
 		$this->rawContent = $this->content = $content;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getContent()
+	public function getContent(): ?string
 	{
 		return $this->content;
 	}
 
-	/**
-	 * @param string $content
-	 * @return void
-	 */
-	public function setContent($content)
+	public function setContent(?string $content): void
 	{
 		$this->content = $content;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getRawContent()
+	public function getRawContent(): ?string
 	{
 		return $this->rawContent;
 	}

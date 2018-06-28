@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Tlapnet\Doxen\Event;
 
@@ -7,22 +7,15 @@ use Tlapnet\Doxen\Component\DoxenControl;
 abstract class AbstractControlEvent extends AbstractEvent
 {
 
-	/** @var DoxenControl */
+	/** @var DoxenControl|null */
 	protected $control;
 
-	/**
-	 * @return DoxenControl
-	 */
-	public function getControl()
+	public function getControl(): ?DoxenControl
 	{
 		return $this->control;
 	}
 
-	/**
-	 * @param DoxenControl $control
-	 * @return void
-	 */
-	public function setControl(DoxenControl $control)
+	public function setControl(?DoxenControl $control): void
 	{
 		$this->control = $control;
 	}
