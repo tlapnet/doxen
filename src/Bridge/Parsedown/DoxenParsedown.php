@@ -32,10 +32,10 @@ class DoxenParsedown extends Parsedown
 
 	/**
 	 * @param mixed[] $excerpt
-	 * @return mixed[]
+	 * @return null|mixed[]
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	protected function inlineLink($excerpt): array
+	protected function inlineLink($excerpt): ?array
 	{
 		$link = parent::inlineLink($excerpt);
 
