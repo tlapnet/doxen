@@ -11,6 +11,15 @@ use Tlapnet\Doxen\Widget\Widgets;
 class TOCDecorator extends AbstractNodeListener
 {
 
+	/** @var string */
+	private $template;
+
+	public function __construct(?string $template = null)
+	{
+		parent::__construct();
+		$this->template = $template ?? __DIR__ . '/template/toc.latte';
+	}
+
 	public function decorateNode(NodeEvent $event): void
 	{
 		if (!($node = $this->getTextNode($event))) return;
@@ -21,7 +30,7 @@ class TOCDecorator extends AbstractNodeListener
 
 		$wm = new WidgetManager($node);
 		$wm->get(Widgets::PAGE_TOC)->add('toc', function (Template $template) use ($elements) {
-			$template->setFile(__DIR__ . '/template/toc.latte');
+			$template->setFile($this->template);
 			$template->elements = $elements;
 
 			return $template;
