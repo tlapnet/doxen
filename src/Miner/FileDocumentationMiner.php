@@ -155,9 +155,9 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	}
 
 	/**
-	 * @return mixed[]
+	 * @return mixed[]|string
 	 */
-	private function findFilesAndFolders(string $docPath, bool $isRoot = false): array
+	private function findFilesAndFolders(string $docPath, bool $isRoot = false)
 	{
 		$result = [];
 		if (is_dir($docPath)) {
