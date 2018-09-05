@@ -10,7 +10,7 @@ use Tlapnet\Doxen\Tree\FileNode;
 use Tlapnet\Doxen\Tree\ParentNode;
 use Tlapnet\Doxen\Tree\TextNode;
 
-final class FileDocumentationMiner implements IDocumentationMiner
+class FileDocumentationMiner implements IDocumentationMiner
 {
 
 	/** @var string[] */
@@ -48,7 +48,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	/**
 	 * @return FileNode|TextNode
 	 */
-	private function getHomepage(): AbstractNode
+	protected function getHomepage(): AbstractNode
 	{
 		$homepage = new TextNode('Homepage'); // default homepage
 		$homepage->setTitle('Homepage');
@@ -82,7 +82,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	/**
 	 * @param mixed[] $docFiles
 	 */
-	private function createDocTree(array $docFiles): DocTree
+	protected function createDocTree(array $docFiles): DocTree
 	{
 		$tree = new DocTree();
 
@@ -103,7 +103,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	/**
 	 * @param mixed[] $docFiles
 	 */
-	private function createNodes(array $docFiles, ParentNode $parentNode): ParentNode
+	protected function createNodes(array $docFiles, ParentNode $parentNode): ParentNode
 	{
 		foreach ($docFiles as $k => $v) {
 			if (is_array($v)) {
@@ -119,7 +119,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 		return $parentNode;
 	}
 
-	private function createFileNode(string $title, string $filename): FileNode
+	protected function createFileNode(string $title, string $filename): FileNode
 	{
 		$fileNode = new FileNode($filename);
 		$fileNode->setTitle($title);
@@ -139,7 +139,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	 * @param mixed[] $doc
 	 * @return mixed[]
 	 */
-	private function loadDocFiles(array $doc): array
+	protected function loadDocFiles(array $doc): array
 	{
 		$result = [];
 		foreach ($doc as $key => $value) {
@@ -157,7 +157,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 	/**
 	 * @return mixed[]|string
 	 */
-	private function findFilesAndFolders(string $docPath, bool $isRoot = false)
+	protected function findFilesAndFolders(string $docPath, bool $isRoot = false)
 	{
 		$result = [];
 		if (is_dir($docPath)) {
@@ -197,7 +197,7 @@ final class FileDocumentationMiner implements IDocumentationMiner
 		return $result;
 	}
 
-	private function normalizePathname(string $filename): string
+	protected function normalizePathname(string $filename): string
 	{
 		$filename = preg_replace('~^[0-9]+_~', '', $filename); // 01_Something => Something
 		return ucfirst(str_replace('_', ' ', $filename)); // some_text => Some text
