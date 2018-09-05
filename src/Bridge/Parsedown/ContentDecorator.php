@@ -118,7 +118,7 @@ class ContentDecorator implements IListener
 	private function getErrorImage(): Image
 	{
 		$image = Image::fromBlank(400, 100, Image::rgb(250, 140, 140));
-		$image->string(5, 20, 40, 'Image load problem.', imagecolorallocate($image, 0, 255, 255));
+		$image->string(5, 20, 40, 'Image load problem.', imagecolorallocate($image->getImageResource(), 0, 255, 255));
 
 		return $image;
 	}
