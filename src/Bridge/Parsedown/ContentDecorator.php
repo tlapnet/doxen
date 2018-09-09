@@ -93,6 +93,7 @@ class ContentDecorator implements IListener
 			}
 
 			$dirname = pathinfo($node->getFilename(), PATHINFO_DIRNAME);    // /doxen/docs/04_Komponenty/00_ACL
+			$dirname = realpath($dirname);
 			$imagePath = $dirname . DIRECTORY_SEPARATOR . $imageLink; // /doxen/docs/04_Komponenty/00_ACL/images/database.png
 
 			// check if image file exists
