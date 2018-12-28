@@ -37,8 +37,8 @@ class DoxenControl extends Control
 	/** @var ISearcher */
 	private $searcher;
 
-	/** @var SearchResult[] */
-	private $searchResult = [];
+	/** @var SearchResult[]|null */
+	private $searchResult;
 
 	/** @var string|null */
 	private $searchQuery;
@@ -139,7 +139,7 @@ class DoxenControl extends Control
 	{
 		$this->beforeRender();
 
-		if ($this->searchResult === []) {
+		if ($this->searchResult === null) {
 			$this->renderDoc();
 		} else {
 			$this->renderSearch();
