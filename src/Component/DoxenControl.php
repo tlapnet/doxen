@@ -48,24 +48,22 @@ class DoxenControl extends Control
 
 	public function __construct(DocTree $tree, ?Config $config = null)
 	{
-		parent::__construct();
 		$this->tree = $tree;
 		$this->config = $config ?: new Config();
+		$this->setMonitor();
 	}
 
-	/**
-	 * @param IPresenter $presenter
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
-	 */
-	protected function attached($presenter): void
-	{
-		parent::attached($presenter);
 
-		if ($presenter instanceof Presenter) {
+	/**
+	 * Set monitor in component
+	 */
+	private function setMonitor()
+	{
+		$this->monitor(Control::class, function (){
 			$this->widgetRenderer = new WidgetRenderer($this->createTemplate());
 			$this->emit(new ConfigEvent($this->config));
 			$this->emit(new DocTreeEvent($this->tree));
-		}
+		});
 	}
 
 	public function setSearcher(ISearcher $searcher): void

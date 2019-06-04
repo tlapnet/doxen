@@ -24,7 +24,7 @@
   ],
   "require": {
     "erusev/parsedown": "~1.7.1",
-    "nette/application": "~2.4.11"
+    "nette/application": "~3.0"
   },
   "require-dev": {
     "ninjify/qa": "^0.8.0",
