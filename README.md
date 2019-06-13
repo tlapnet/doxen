@@ -17,10 +17,11 @@ Documentation generator for PHP.
 
 ## Version
 
-| State       | Version  | Branch   | PHP      |
-|-------------|----------|----------|----------|
-| dev         | `^1.1.0` | `master` | `>= 7.1` |
-| stable      | `^1.0.0` | `master` | `>= 7.1` |
+| State       | Version | Branch   | Nette | PHP     |
+|-------------|---------|----------|-------|---------|
+| dev         | `^2.1`  | `master` | 3.0+  | `^7.2`  |
+| stable      | `^2.0`  | `master` | 3.0+  | `^7.2`  |
+| stable      | `^1.1`  | `master` | 2.4   | `>=7.1` |
 
 ## Maintainers
 
