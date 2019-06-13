@@ -22,7 +22,7 @@ class FileNode extends TextNode
 
 	public function getContent(): string
 	{
-		if (!$this->content) {
+		if ($this->content === null) {
 			$this->rawContent = $this->content = file_get_contents($this->filename);
 		}
 

@@ -14,7 +14,7 @@ class FileSystemDecorator extends AbstractNodeListener
 
 	public function decorateNode(NodeEvent $event): void
 	{
-		if (!($node = $this->getFileNode($event))) return;
+		if (($node = $this->getFileNode($event)) === null) return;
 
 		if (!file_exists($node->getFilename())) return;
 

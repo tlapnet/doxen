@@ -22,7 +22,7 @@ class TOCDecorator extends AbstractNodeListener
 
 	public function decorateNode(NodeEvent $event): void
 	{
-		if (!($node = $this->getTextNode($event))) return;
+		if (($node = $this->getTextNode($event)) === null) return;
 
 		$parsedown = new DoxenParsedown($event->getControl());
 		$parsedown->text($node->getRawContent());

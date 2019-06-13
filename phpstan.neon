@@ -1,8 +1,25 @@
-includes:
-	- temp/phpstan/vendor/phpstan/phpstan-strict-rules/rules.neon
-	- temp/phpstan/vendor/phpstan/phpstan-nette/extension.neon
-	- temp/phpstan/vendor/phpstan/phpstan-nette/rules.neon
-
 parameters:
 	ignoreErrors:
-		- '#Accessing property $arguments on possibly null value of type Nette\DI\Statement|null#'
+		# Doesn't seems so
+		- '#^Method Tlapnet\\Doxen\\Tree\\DocTree\:\:getBreadcrumbs\(\) should return array\<Tlapnet\\Doxen\\Tree\\AbstractNode\> but returns array\<int\|string, Tlapnet\\Doxen\\Tree\\AbstractNode\|null\>\.$#'
+
+		# We know, contravariance is nice
+		- '#^.+should be contravariant with.+$#'
+
+		# Too much null values everywhere - probably could not happen
+		- '#^Parameter \#1 \$titles of method Tlapnet\\Doxen\\Searcher\\SearchResult\:\:setTitles\(\) expects array\<string\>, array\<string\|null\> given\.$#'
+		- '#^Parameter \#1 \$control of class Tlapnet\\Doxen\\Bridge\\Parsedown\\DoxenParsedown constructor expects Nette\\Application\\UI\\Control, Tlapnet\\Doxen\\Component\\DoxenControl\|null given\.$#'
+		- '#^Cannot call method .+ on Nette\\Application\\UI\\Presenter\|null\.$#'
+		- '#^Cannot call method getPath\(\) on Tlapnet\\Doxen\\Tree\\AbstractNode\|null\.$#'
+		- '#^Parameter \#1 \$node of class Tlapnet\\Doxen\\Event\\NodeEvent constructor expects Tlapnet\\Doxen\\Tree\\AbstractNode, Tlapnet\\Doxen\\Tree\\AbstractNode\|null given\.$#'
+		- '#^Cannot access property \$page on Tlapnet\\Doxen\\Component\\DoxenControl\|null\.$#'
+		- '#^Cannot call method .+ on Tlapnet\\Doxen\\Component\\DoxenControl\|null\.$#'
+
+		# Idk, magic?
+		- message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
+		  path: %currentWorkingDirectory%/src/Bridge/Parsedown/DoxenParsedown.php
+
+		# Ignore all soft-failing php functions
+		- '#^.+\|false.+$#'
+		- message: '#^Parameter \#3 \$subject of function str_replace expects array\|string, string\|null given\.$#'
+		  path: %currentWorkingDirectory%/src/Miner/FileDocumentationMiner.php

@@ -60,15 +60,17 @@ abstract class AbstractNode
 		$this->id = $id;
 	}
 
-	public function getParent(): ?AbstractNode
+	public function getParent(): ?ParentNode
 	{
 		return $this->parent;
 	}
 
-	public function setParent(?AbstractNode $parent): void
+	public function setParent(?ParentNode $closestParent): void
 	{
-		$this->parent = $parent;
-		$nodeId = Strings::webalize($this->getTitle());
+		$this->parent = $closestParent;
+		$title = $this->getTitle();
+		assert($title !== null);
+		$nodeId = Strings::webalize($title);
 		$parents = $this->getParents();
 		$ids = [$nodeId];
 
@@ -147,14 +149,14 @@ abstract class AbstractNode
 
 	protected function attached(AbstractNode $node): void
 	{
-		if ($this->parent) {
+		if ($this->parent !== null) {
 			$this->parent->attached($node);
 		}
 	}
 
 	protected function detached(AbstractNode $node): void
 	{
-		if ($this->parent) {
+		if ($this->parent !== null) {
 			$this->parent->detached($node);
 		}
 	}

@@ -13,7 +13,7 @@ class GitLabDecorator extends AbstractNodeListener
 
 	public function decorateNode(NodeEvent $event): void
 	{
-		if (!($node = $this->getFileNode($event)))
+		if (($node = $this->getFileNode($event)) === null)
 			return;
 
 		if (!file_exists($node->getFilename()))
@@ -23,7 +23,7 @@ class GitLabDecorator extends AbstractNodeListener
 		$wm->get(Widgets::PAGE_MENU)->add('gitlab', function (Template $template) use ($node) {
 			$git = $node->getMetadataPart('git');
 			$global = $node->getMetadataPart('global');
-			if (!$git || !$global)
+			if ($git === null || $global === null)
 				return null;
 
 			$link = $global['git']['url'] . '/' . $git['projectName'] . '/edit/' . $git['currentBranch'] . '/' . $git['fileName'];

@@ -1,33 +1,26 @@
-# Doxen
+# Tlapnet Doxen
 
 Documentation generator for PHP.
-
------
 
 [![Build Status](https://img.shields.io/travis/tlapnet/doxen.svg?style=flat-square)](https://travis-ci.org/tlapnet/doxen)
 [![Code coverage](https://img.shields.io/coveralls/tlapnet/doxen.svg?style=flat-square)](https://coveralls.io/r/tlapnet/doxen)
 [![Licence](https://img.shields.io/packagist/l/tlapnet/doxen.svg?style=flat-square)](https://packagist.org/packages/tlapnet/doxen)
-
 [![Downloads this Month](https://img.shields.io/packagist/dm/tlapnet/doxen.svg?style=flat-square)](https://packagist.org/packages/tlapnet/doxen)
 [![Downloads total](https://img.shields.io/packagist/dt/tlapnet/doxen.svg?style=flat-square)](https://packagist.org/packages/tlapnet/doxen)
 [![Latest stable](https://img.shields.io/packagist/v/tlapnet/doxen.svg?style=flat-square)](https://packagist.org/packages/tlapnet/doxen)
+[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
-## Install
+## Documentation
 
-```
-composer require tlapnet/doxen
-```
+- [Setup](.docs/README.md#setup)
+- [Usage](.docs/README.md#usage)
 
-## Versions
+## Version
 
 | State       | Version  | Branch   | PHP      |
 |-------------|----------|----------|----------|
 | dev         | `^1.1.0` | `master` | `>= 7.1` |
 | stable      | `^1.0.0` | `master` | `>= 7.1` |
-
-## Overview
-
-- [Documentation](https://github.com/tlapnet/doxen/blob/master/.docs/README.md)
 
 ## Maintainers
 
@@ -58,7 +51,5 @@ composer require tlapnet/doxen
     </tr>
   <tbody>
 </table>
-
------
 
 Thank you for testing, reporting and contributing.

@@ -20,12 +20,12 @@ final class WidgetRenderer
 	public function render(AbstractNode $node, string $widget): void
 	{
 		// If there's no widgets, then skip it
-		if (!($widgets = $node->getMetadataPart('widgets'))) {
+		if (($widgets = $node->getMetadataPart('widgets')) === null) {
 			return;
 		}
 
 		// If there's no widget in widgets, then skip it
-		if (!($section = Arrays::get($widgets, $widget, null))) {
+		if (($section = Arrays::get($widgets, $widget, null)) === null) {
 			return;
 		}
 
