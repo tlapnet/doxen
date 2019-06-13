@@ -2,7 +2,6 @@
 
 namespace Tlapnet\Doxen\Component;
 
-use Nette\Application\IPresenter;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Presenter;
 use Nette\Bridges\ApplicationLatte\Template;
@@ -52,24 +51,13 @@ class DoxenControl extends Control
 
 	public function __construct(DocTree $tree, ?Config $config = null)
 	{
-		parent::__construct();
 		$this->tree = $tree;
 		$this->config = $config ?: new Config();
-	}
-
-	/**
-	 * @param IPresenter $presenter
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
-	 */
-	protected function attached($presenter): void
-	{
-		parent::attached($presenter);
-
-		if ($presenter instanceof Presenter) {
+		$this->monitor(Presenter::class, function (): void {
 			$this->widgetRenderer = new WidgetRenderer($this->createTemplate());
 			$this->emit(new ConfigEvent($this->config));
 			$this->emit(new DocTreeEvent($this->tree));
-		}
+		});
 	}
 
 	public function setSearcher(ISearcher $searcher): void

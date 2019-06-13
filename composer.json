@@ -23,7 +23,8 @@
   "require": {
     "php": "^7.2",
     "erusev/parsedown": "~1.7.1",
-    "nette/application": "~2.4.11"
+    "nette/application": "~3.0.0",
+    "nette/finder": "~2.4.0 || ~2.5.0"
   },
   "require-dev": {
     "ninjify/nunjuck": "^0.2.0",
@@ -46,7 +47,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-develop": "1.1.x-dev"
+      "dev-develop": "2.1.x-dev"
     }
   }
 }
