@@ -12,7 +12,7 @@ class GitProvider extends AbstractNodeListener
 
 	public function decorateNode(NodeEvent $event): void
 	{
-		if (!($node = $this->getFileNode($event)))
+		if (($node = $this->getFileNode($event)) === null)
 			return;
 
 		if (!file_exists($node->getFilename()))
@@ -24,11 +24,12 @@ class GitProvider extends AbstractNodeListener
 		$date = new DateTime($date);
 
 		$topLevel = self::git($node, 'rev-parse --show-toplevel');
-		$gitFileName = str_replace($topLevel . '/', null, $node->getFilename());
+		$gitFileName = str_replace($topLevel . '/', '', $node->getFilename());
 		$currentBranch = self::git($node, 'rev-parse --abbrev-ref HEAD');
 		$originUrl = self::git($node, 'config --get remote.origin.url');
 		$nameParts = explode(':', $originUrl);
 		$projectName = array_pop($nameParts);
+		assert($projectName !== null);
 		$projectName = substr($projectName, 0, -4);
 
 		$node->setMetadataPart('git', [

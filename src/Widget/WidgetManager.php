@@ -20,7 +20,7 @@ class WidgetManager
 		$widgets = $this->node->getMetadataPart('widgets');
 
 		// Init widgets
-		if (!$widgets) $widgets = [];
+		if ($widgets === null) $widgets = [];
 
 		// Init new widget section
 		if (!isset($widgets[$section])) {

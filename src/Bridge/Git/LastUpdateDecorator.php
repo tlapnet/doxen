@@ -13,14 +13,14 @@ class LastUpdateDecorator extends AbstractNodeListener
 
 	public function decorateNode(NodeEvent $event): void
 	{
-		if (!($node = $this->getFileNode($event))) return;
+		if (($node = $this->getFileNode($event)) === null) return;
 
 		if (!file_exists($node->getFilename())) return;
 
 		$wm = new WidgetManager($node);
 		$wm->get(Widgets::PAGE_MENU)->add('git', function (Template $template) use ($node) {
 			$git = $node->getMetadataPart('git');
-			if (!$git)
+			if ($git === null)
 				return null;
 
 			$author = $git['lastCommiterName'];

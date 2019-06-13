@@ -41,6 +41,7 @@ class ParentNode extends AbstractNode
 	public function removeNode(AbstractNode $node): void
 	{
 		$nodeId = $node->getId();
+		assert($nodeId !== null);
 		if ($this->hasNode($nodeId)) {
 			unset($this->nodes[$nodeId]);
 			$this->detached($node);

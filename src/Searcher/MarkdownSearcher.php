@@ -4,6 +4,7 @@ namespace Tlapnet\Doxen\Searcher;
 
 use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\DocTree;
+use Tlapnet\Doxen\Tree\ParentNode;
 
 class MarkdownSearcher implements ISearcher
 {
@@ -19,7 +20,7 @@ class MarkdownSearcher implements ISearcher
 	 */
 	public function search(DocTree $docTree, string $query): array
 	{
-		if (empty($query)) {
+		if ($query === '') {
 			return [];
 		}
 
@@ -43,7 +44,7 @@ class MarkdownSearcher implements ISearcher
 						 * ###### headline => level 2
 						 */
 						$headline = strlen($line) - strlen(ltrim($line, '#'));
-						$level = $headline ? max(8 - $headline, 1) : 1;
+						$level = $headline !== 0 ? max(8 - $headline, 1) : 1;
 
 						if (!isset($result[$path])) {
 							$result[$path] = [
@@ -87,11 +88,12 @@ class MarkdownSearcher implements ISearcher
 		foreach ($docTree as $node) {
 			$t = $titlePath;
 			$t[] = $node->getTitle();
-			if ($node->getType() === AbstractNode::TYPE_NODE) {
+			if ($node instanceof ParentNode) {
 				$this->setAvailableFiles($node->getNodes(), $t);
 			} else {
-				$this->fileList[$node->getPath()] = $node;
-				$this->titleList[$node->getPath()] = $t;
+				$path = $node->getPath();
+				$this->fileList[$path] = $node;
+				$this->titleList[$path] = $t;
 			}
 		}
 	}

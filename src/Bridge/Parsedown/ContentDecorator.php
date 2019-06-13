@@ -24,16 +24,15 @@ class ContentDecorator implements IListener
 
 	public function listen(AbstractEvent $event): void
 	{
-		if ($event->getType() === AbstractEvent::TYPE_NODE) {
+		if ($event instanceof NodeEvent) {
 			$this->decorateNode($event);
-		} elseif ($event->getType() === AbstractEvent::TYPE_SIGNAL) {
+		} elseif ($event instanceof SignalEvent) {
 			$this->decorateSignal($event);
 		}
 	}
 
 	private function decorateNode(NodeEvent $event): void
 	{
-		/** @var TextNode $node */
 		$node = $event->getNode();
 
 		if ($node->getType() !== AbstractNode::TYPE_LEAF) {
@@ -61,14 +60,14 @@ class ContentDecorator implements IListener
 		$docTree = $event->getDocTree();
 		$control = $event->getControl();
 
-		$imageNode = $control->page ? $docTree->getNode($control->page) : $docTree->getHomepage();
-		$imageLink = $control->getParameter('imageLink', false);
+		$imageNode = $control->page !== null ? $docTree->getNode($control->page) : $docTree->getHomepage();
+		$imageLink = $control->getParameter('imageLink');
 
 		// prepare image
-		if ($imageNode
+		if ($imageNode !== null
 			&& ($imageNode instanceof FileNode)
 			&& $imageNode->getType() === AbstractNode::TYPE_LEAF
-			&& $imageLink
+			&& $imageLink !== null
 		) {
 			$image = $this->getImage($imageNode, $imageLink);
 		} else {

@@ -5,6 +5,7 @@ namespace Tlapnet\Doxen\Component;
 use Nette\Application\IPresenter;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Presenter;
+use Nette\Bridges\ApplicationLatte\Template;
 use Tlapnet\Doxen\Event\AbstractControlEvent;
 use Tlapnet\Doxen\Event\AbstractEvent;
 use Tlapnet\Doxen\Event\ConfigEvent;
@@ -19,10 +20,13 @@ use Tlapnet\Doxen\Tree\DocTree;
 use Tlapnet\Doxen\Tree\TextNode;
 use Tlapnet\Doxen\Widget\WidgetRenderer;
 
+/**
+ * @property-read Template $template
+ */
 class DoxenControl extends Control
 {
 
-	/** @var string @persistent */
+	/** @var string|null @persistent */
 	public $page;
 
 	/** @var DocTree */
@@ -34,7 +38,7 @@ class DoxenControl extends Control
 	/** @var IListener[] */
 	private $listeners = [];
 
-	/** @var ISearcher */
+	/** @var ISearcher|null */
 	private $searcher;
 
 	/** @var SearchResult[]|null */
@@ -79,7 +83,7 @@ class DoxenControl extends Control
 	public function handleSearch(): void
 	{
 		$query = $this->getPresenter()->getHttpRequest()->getPost('query');
-		if ($this->searcher && $query !== null) {
+		if ($this->searcher !== null && $query !== null) {
 			$this->searchQuery = $query;
 			$this->searchResult = $this->searcher->search($this->tree, $query);
 		}
@@ -87,7 +91,7 @@ class DoxenControl extends Control
 
 	public function handleEvent(string $type): void
 	{
-		if (!empty($type)) {
+		if ($type !== '') {
 			$this->emit(new SignalEvent($this->tree, $type));
 		}
 	}
@@ -155,13 +159,13 @@ class DoxenControl extends Control
 		$this->template->setFile($this->config->getDocTemplate());
 
 		// try setup page from homepage
-		if (empty($this->page)
+		if ($this->page === null
 			|| $this->tree->getHomepage()->getPath() === $this->page) {
 			$this->renderHomepage();
 		} else {
 			$node = $this->tree->getNode($this->page);
 
-			if ($node) {
+			if ($node !== null) {
 				$this->emit(new NodeEvent($node));
 
 				// check if selected page contains documentation content or list of another documentations

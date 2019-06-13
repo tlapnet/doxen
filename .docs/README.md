@@ -1,10 +1,19 @@
-# Doxen
-
-## Content
+# Tlapnet Doxen
 
 Nette komponenta DoxenControl umoznuje snadny render markdown dokumentace ve vasi aplikaci. Vyhodou je snadne pouziti a moznost komplexni konfigurace kde a jak se ma dokumentace hledat a jak se bude
 prezentovat uzivateli. V dokumentaci lze mit obrazky a odkazy na dalsi podstranky, ktere mohou byt libovolne zanorene v adresarove strukture. Relativni odkazy jsou upraveny a funkcni, absolutni URL adresy
 zustaveji nezmenene.
+
+## Content
+
+- [Setup](#setup)
+- [Usage](#usage)
+
+## Setup
+
+```bash
+composer require tlapnet/doxen
+```
 
 ## Usage
 

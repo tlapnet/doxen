@@ -57,7 +57,7 @@ class FileDocumentationMiner implements IDocumentationMiner
 		if (isset($this->config['home']['content'])) {
 			$content = $this->config['home']['content'];
 			if (is_file($content)) {
-				if ($this->homepage && realpath($this->homepage->getFilename()) === realpath($content)) {
+				if ($this->homepage !== null && realpath($this->homepage->getFilename()) === realpath($content)) {
 					$homepage = clone $this->homepage;
 				} else {
 					$homepage = new FileNode($content);
@@ -67,7 +67,7 @@ class FileDocumentationMiner implements IDocumentationMiner
 				$homepage = new TextNode($content);
 				$homepage->setTitle('Homepage');
 			}
-		} elseif ($this->homepage) {
+		} elseif ($this->homepage !== null) {
 			$homepage = clone $this->homepage;
 		}
 
@@ -166,7 +166,7 @@ class FileDocumentationMiner implements IDocumentationMiner
 			$hasSubdoc = false;
 			foreach (Finder::findDirectories('*')->in($docPath) as $path => $file) {
 				$subdoc = $this->findFilesAndFolders($path); // check for some documentation files in subdirectory (this skips /images etc. directories)
-				if (!empty($subdoc)) {
+				if ($subdoc !== []) {
 					$key = $this->normalizePathname(basename($path));
 					if (is_array($subdoc)) {
 						$resultDirectories[$key] = $subdoc;

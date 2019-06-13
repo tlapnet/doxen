@@ -2,14 +2,13 @@
 
 namespace Tlapnet\Doxen\Searcher;
 
-use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\DocTree;
 
 interface ISearcher
 {
 
 	/**
-	 * @return AbstractNode[]
+	 * @return SearchResult[]
 	 */
 	public function search(DocTree $docTree, string $query): array;
 
