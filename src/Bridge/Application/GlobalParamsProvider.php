@@ -16,7 +16,6 @@ class GlobalParamsProvider extends AbstractNodeListener
 	 */
 	public function __construct(array $parameters)
 	{
-		parent::__construct();
 		$this->parameters = $parameters;
 	}
 

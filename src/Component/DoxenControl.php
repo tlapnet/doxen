@@ -14,8 +14,8 @@ use Tlapnet\Doxen\Event\SignalEvent;
 use Tlapnet\Doxen\Listener\IListener;
 use Tlapnet\Doxen\Searcher\ISearcher;
 use Tlapnet\Doxen\Searcher\SearchResult;
-use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\DocTree;
+use Tlapnet\Doxen\Tree\ParentNode;
 use Tlapnet\Doxen\Tree\TextNode;
 use Tlapnet\Doxen\Widget\WidgetRenderer;
 
@@ -157,7 +157,7 @@ class DoxenControl extends Control
 				$this->emit(new NodeEvent($node));
 
 				// check if selected page contains documentation content or list of another documentations
-				if ($node->getType() === AbstractNode::TYPE_NODE) {
+				if ($node instanceof ParentNode) {
 					$this->template->setFile($this->config->getListTemplate());
 				}
 

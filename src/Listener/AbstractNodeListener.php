@@ -4,19 +4,17 @@ namespace Tlapnet\Doxen\Listener;
 
 use Tlapnet\Doxen\Event\AbstractEvent;
 use Tlapnet\Doxen\Event\NodeEvent;
-use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\FileNode;
 use Tlapnet\Doxen\Tree\TextNode;
 
-abstract class AbstractNodeListener extends AbstractTypeListener
+abstract class AbstractNodeListener implements IListener
 {
 
-	/**
-	 * AbstractNodeListener constructor
-	 */
-	public function __construct()
+	public function listen(AbstractEvent $event): void
 	{
-		parent::__construct(AbstractNode::TYPE_NODE);
+		if ($event instanceof NodeEvent) {
+			$this->decorate($event);
+		}
 	}
 
 	/**
@@ -33,9 +31,9 @@ abstract class AbstractNodeListener extends AbstractTypeListener
 	{
 		$node = $event->getNode();
 
-		if ($node->getType() !== AbstractNode::TYPE_LEAF) return null;
-
-		if (!($node instanceof TextNode)) return null;
+		if (!($node instanceof TextNode)) {
+			return null;
+		}
 
 		return $node;
 	}
@@ -44,9 +42,9 @@ abstract class AbstractNodeListener extends AbstractTypeListener
 	{
 		$node = $event->getNode();
 
-		if ($node->getType() !== AbstractNode::TYPE_LEAF) return null;
-
-		if (!($node instanceof FileNode)) return null;
+		if (!($node instanceof FileNode)) {
+			return null;
+		}
 
 		return $node;
 	}

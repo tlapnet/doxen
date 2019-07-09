@@ -9,11 +9,6 @@ abstract class AbstractNode
 
 	public const PATH_SEPARATOR = '/';
 
-	public const
-		TYPE_ROOT = 1,
-		TYPE_NODE = 2,
-		TYPE_LEAF = 3;
-
 	/** @var string|null */
 	protected $title;
 
@@ -31,14 +26,6 @@ abstract class AbstractNode
 
 	/** @var mixed[] */
 	protected $metadata = [];
-
-	/** @var int */
-	protected $type = self::TYPE_LEAF;
-
-	public function getType(): int
-	{
-		return $this->type;
-	}
 
 	public function getTitle(): ?string
 	{

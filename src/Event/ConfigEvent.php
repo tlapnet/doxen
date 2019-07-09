@@ -12,7 +12,6 @@ final class ConfigEvent extends AbstractEvent
 
 	public function __construct(Config $config)
 	{
-		$this->type = self::TYPE_CONFIG;
 		$this->config = $config;
 	}
 
