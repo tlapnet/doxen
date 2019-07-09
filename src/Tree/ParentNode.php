@@ -8,11 +8,6 @@ class ParentNode extends AbstractNode
 	/** @var AbstractNode[] */
 	private $nodes = [];
 
-	public function __construct()
-	{
-		$this->type = self::TYPE_NODE;
-	}
-
 	/**
 	 * @return AbstractNode[]
 	 */

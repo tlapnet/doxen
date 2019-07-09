@@ -13,8 +13,8 @@ use Tlapnet\Doxen\Event\AbstractEvent;
 use Tlapnet\Doxen\Event\NodeEvent;
 use Tlapnet\Doxen\Event\SignalEvent;
 use Tlapnet\Doxen\Listener\IListener;
-use Tlapnet\Doxen\Tree\AbstractNode;
 use Tlapnet\Doxen\Tree\FileNode;
+use Tlapnet\Doxen\Tree\ParentNode;
 use Tlapnet\Doxen\Tree\TextNode;
 
 class ContentDecorator implements IListener
@@ -35,7 +35,7 @@ class ContentDecorator implements IListener
 	{
 		$node = $event->getNode();
 
-		if ($node->getType() !== AbstractNode::TYPE_LEAF) {
+		if ($node instanceof ParentNode) {
 			return;
 		}
 
@@ -66,7 +66,6 @@ class ContentDecorator implements IListener
 		// prepare image
 		if ($imageNode !== null
 			&& ($imageNode instanceof FileNode)
-			&& $imageNode->getType() === AbstractNode::TYPE_LEAF
 			&& $imageLink !== null
 		) {
 			$image = $this->getImage($imageNode, $imageLink);

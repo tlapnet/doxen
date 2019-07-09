@@ -12,7 +12,6 @@ class DocTreeEvent extends AbstractControlEvent
 
 	public function __construct(DocTree $docTree)
 	{
-		$this->type = self::TYPE_DOCTREE;
 		$this->docTree = $docTree;
 	}
 

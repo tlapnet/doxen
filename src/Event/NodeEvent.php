@@ -12,7 +12,6 @@ final class NodeEvent extends AbstractControlEvent
 
 	public function __construct(AbstractNode $node)
 	{
-		$this->type = self::TYPE_NODE;
 		$this->node = $node;
 	}
 

@@ -13,8 +13,6 @@ final class SignalEvent extends DocTreeEvent
 	public function __construct(DocTree $docTree, string $signal)
 	{
 		parent::__construct($docTree);
-
-		$this->type = self::TYPE_SIGNAL;
 		$this->signal = $signal;
 	}
 

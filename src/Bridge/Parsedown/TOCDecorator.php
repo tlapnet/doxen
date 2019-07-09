@@ -16,7 +16,6 @@ class TOCDecorator extends AbstractNodeListener
 
 	public function __construct(?string $template = null)
 	{
-		parent::__construct();
 		$this->template = $template ?? __DIR__ . '/template/toc.latte';
 	}
 
